@@ -18,15 +18,10 @@ public class KbActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kb);
 
-        SharedPreferences sharedPref = getSharedPreferences("volKB", Context.MODE_PRIVATE);
-        Map<String, ?> highScore = sharedPref.getAll();
+        ContextDbHelper contextDb = new ContextDbHelper(this);
 
-        System.out.println(highScore);
-
-        ArrayList<String> dataSet = new ArrayList<String>();
-        for (Map.Entry<String, ?> pair : highScore.entrySet()) {
-            dataSet.add(pair.getKey()+ ", " + pair.getValue());
-        }
+        ArrayList<String> dataSet = contextDb.getAll();
+        System.out.println(dataSet);
 
         ListAdapter kbAdapter = new KbAdapter(this, dataSet);
 

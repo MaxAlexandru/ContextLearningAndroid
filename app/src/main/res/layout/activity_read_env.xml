@@ -6,10 +6,24 @@
     android:padding="10dp"
     android:orientation="vertical"
     tools:context="com.example.max.contextlearning.ReadEnvActivity">
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Record"
+        android:id="@+id/record_button" />
+
+    <TextView
+        android:id="@+id/amp_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ready to record"
+        android:textAlignment="center"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Volume Level"
+        android:text="Set volume level:"
         android:paddingBottom="10dp"
         android:textSize="20sp" />
     <SeekBar
@@ -19,16 +33,11 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Record"
-        android:id="@+id/record_button" />
-    <Button
+        android:text="Save preference"
+        android:id="@+id/save_button"
+        android:enabled="false" />
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Stop"
-        android:id="@+id/stop_button" />
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/amp_text_view" />
-
+        android:id="@+id/result_list_view" />
 </LinearLayout>

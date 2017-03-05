@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by Max on 2/27/2017.
@@ -27,14 +29,23 @@ public class KbAdapter extends ArrayAdapter {
         else
             kbItemView = convertView;
 
+        TextView date = (TextView) kbItemView.findViewById(R.id.date_text_view);
+        TextView time = (TextView) kbItemView.findViewById(R.id.time_text_view);
+        TextView noiseInt = (TextView) kbItemView.findViewById(R.id.noise_int_text_view);
+        TextView volLvl = (TextView) kbItemView.findViewById(R.id.vol_lvl_text_view);
+
         String data = getItem(position).toString();
-        String[] text = data.split(",");
+        String[] text = data.split("\\|");
 
-        TextView volLvl = (TextView) kbItemView.findViewById(R.id.text_view_vol_lvl);
-        TextView noiseInt = (TextView) kbItemView.findViewById(R.id.text_view_noise_int);
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(Long.parseLong(text[0]));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yy hh:mm:ss");
+        String[] dateSplit = sdf.format(c.getTime()).split(" ");
 
-        volLvl.setText(text[0]);
+        date.setText(dateSplit[0]);
+        time.setText(dateSplit[1]);
         noiseInt.setText(text[1]);
+        volLvl.setText(text[2]);
 
         return kbItemView;
     }
