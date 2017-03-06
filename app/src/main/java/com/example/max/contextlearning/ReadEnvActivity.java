@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.media.RingtoneManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,9 +58,13 @@ public class ReadEnvActivity extends AppCompatActivity {
         volumeSeekBar.setMax(7);
         am = (AudioManager) getSystemService(AUDIO_SERVICE);
         volumeSeekBar.setProgress(am.getStreamVolume(AudioManager.STREAM_RING));
+        volumeSeekBar.setEnabled(false);
 
         mFileName = getExternalCacheDir().getAbsolutePath();
         mFileName += "/audiorecordtest.3gp";
+
+        final MediaPlayer thePlayer = MediaPlayer.create(getApplicationContext(),
+                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE));
 
         /* Starts recording for 5 seconds. */
         recordButton.setOnClickListener(new View.OnClickListener() {
@@ -90,6 +95,7 @@ public class ReadEnvActivity extends AppCompatActivity {
 
                         recStateTextView.setText("Finished. Noise level: " + amp + "/32768");
                         saveButton.setEnabled(true);
+                        volumeSeekBar.setEnabled(true);
                     }
                 });
             }
@@ -102,7 +108,9 @@ public class ReadEnvActivity extends AppCompatActivity {
                 String date = currentTimeMillis() + "";
                 contextDb.add(date, amp, volumeSeekBar.getProgress());
 
+                thePlayer.stop();
                 saveButton.setEnabled(false);
+                volumeSeekBar.setEnabled(false);
 
                 ArrayList<String> items = contextDb.getAll();
                 if (items != null) {
@@ -112,6 +120,29 @@ public class ReadEnvActivity extends AppCompatActivity {
                     ListView kbListView = (ListView) findViewById(R.id.result_list_view);
                     kbListView.setAdapter(kbAdapter);
                 }
+            }
+        });
+
+        volumeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+                try {
+                    thePlayer.setVolume((float)volumeSeekBar.getProgress() / 7, (float) volumeSeekBar.getProgress() / 7);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                thePlayer.setLooping(false);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                thePlayer.start();
             }
         });
     }

@@ -29,13 +29,13 @@
     <SeekBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/vol_seek_bar" />
+        android:id="@+id/vol_seek_bar"
+        android:enabled="false" />
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Save preference"
-        android:id="@+id/save_button"
-        android:enabled="false" />
+        android:id="@+id/save_button" />
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
