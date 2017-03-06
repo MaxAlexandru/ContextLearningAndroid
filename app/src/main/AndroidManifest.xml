@@ -38,6 +38,7 @@
         <activity android:name=".KbActivity" />
         <activity android:name=".ManualActivity" />
         <activity android:name=".ReadEnvActivity" />
+        <service android:name=".VolumeService" />
     </application>
 
 </manifest>

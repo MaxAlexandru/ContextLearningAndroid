@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
         ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSION);
 
+        Intent intentService = new Intent(this, VolumeService.class);
+        startService(intentService);
+
         String[] menuItems = {
                 "Read Environment",
                 "Knowledge Base",
