@@ -29,8 +29,7 @@
     <SeekBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/vol_seek_bar"
-        android:enabled="false" />
+        android:id="@+id/vol_seek_bar" />
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

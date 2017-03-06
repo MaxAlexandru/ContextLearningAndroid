@@ -17,6 +17,7 @@ public class SaveReceiverPerfect extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("Save", "Perfect");
-        NotificationManager manager = (NotificationManager) context.getSystemService(Service.NOTIFICATION_SERVICE); manager.cancel(1);
+        NotificationManager manager = (NotificationManager) context.getSystemService(Service.NOTIFICATION_SERVICE);
+        manager.cancel(1);
     }
 }

@@ -14,7 +14,7 @@ import android.util.Log;
  * Created by Max on 2/21/2017.
  */
 
-public class MyReceiver extends BroadcastReceiver {
+public class VolumeReceiver extends BroadcastReceiver {
 
     public Context mContext;
     public String incoming_number;

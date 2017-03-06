@@ -59,6 +59,7 @@ public class ReadEnvActivity extends AppCompatActivity {
         am = (AudioManager) getSystemService(AUDIO_SERVICE);
         volumeSeekBar.setProgress(am.getStreamVolume(AudioManager.STREAM_RING));
         volumeSeekBar.setEnabled(false);
+        saveButton.setEnabled(false);
 
         mFileName = getExternalCacheDir().getAbsolutePath();
         mFileName += "/audiorecordtest.3gp";
@@ -106,20 +107,12 @@ public class ReadEnvActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String date = currentTimeMillis() + "";
-                contextDb.add(date, amp, volumeSeekBar.getProgress());
+//                contextDb.add(date, amp, volumeSeekBar.getProgress());
+                contextDb.updateOnVol(volumeSeekBar.getProgress(), date, amp);
 
                 thePlayer.stop();
                 saveButton.setEnabled(false);
                 volumeSeekBar.setEnabled(false);
-
-                ArrayList<String> items = contextDb.getAll();
-                if (items != null) {
-                    ArrayAdapter<String> kbAdapter = new ArrayAdapter<>(context,
-                            android.R.layout.simple_list_item_1, items);
-
-                    ListView kbListView = (ListView) findViewById(R.id.result_list_view);
-                    kbListView.setAdapter(kbAdapter);
-                }
             }
         });
 
