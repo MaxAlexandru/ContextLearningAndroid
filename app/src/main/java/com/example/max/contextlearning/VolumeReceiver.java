@@ -18,7 +18,7 @@ public class VolumeReceiver extends BroadcastReceiver {
 
     public Context mContext;
     public String incoming_number;
-    private int prev_state;
+    private int prev_state, prev_prev_state;
 
     public void onReceive(Context context, Intent intent) {
         mContext = context;
@@ -44,22 +44,27 @@ public class VolumeReceiver extends BroadcastReceiver {
             switch(state){
                 case TelephonyManager.CALL_STATE_RINGING:
                     Log.d(TAG, "CALL_STATE_RINGING");
+                    prev_prev_state = prev_state;
                     prev_state=state;
                     break;
 
                 case TelephonyManager.CALL_STATE_OFFHOOK:
                     Log.d(TAG, "CALL_STATE_OFFHOOK");
+                    prev_prev_state = prev_state;
                     prev_state=state;
                     break;
 
                 case TelephonyManager.CALL_STATE_IDLE:
                     Log.d(TAG, "CALL_STATE_IDLE==>"+incoming_number);
-                    if((prev_state == TelephonyManager.CALL_STATE_OFFHOOK)){
+                    if((prev_state == TelephonyManager.CALL_STATE_OFFHOOK) &&
+                            (prev_prev_state == TelephonyManager.CALL_STATE_RINGING)){
+                        prev_prev_state = prev_state;
                         prev_state=state;
                         //Answered Call which is ended
                         addNotification();
                     }
                     if((prev_state == TelephonyManager.CALL_STATE_RINGING)){
+                        prev_prev_state = prev_state;
                         prev_state=state;
                         //Rejected or Missed call
                         addNotification();

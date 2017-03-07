@@ -4,12 +4,9 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.media.RingtoneManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.View;
 
 import java.io.IOException;
 import java.util.ArrayList;
