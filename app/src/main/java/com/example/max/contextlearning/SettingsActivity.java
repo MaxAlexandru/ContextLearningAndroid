@@ -22,7 +22,8 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         final PackageManager pm  = this.getPackageManager();
-        final ComponentName componentName = new ComponentName(this, VolumeReceiver.class);
+        final ComponentName volReceiver = new ComponentName(this, VolumeReceiver.class);
+        final ComponentName volService = new ComponentName(this, VolumeService.class);
 
         SharedPreferences sharedPref = getSharedPreferences(
                 getString(R.string.settings_filename),Context.MODE_PRIVATE);
@@ -39,16 +40,33 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (!b) {
-                    pm.setComponentEnabledSetting(componentName,
+                    pm.setComponentEnabledSetting(volReceiver,
                             PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                             PackageManager.DONT_KILL_APP);
 
                     editor.putString("Notifications", "Off");
                 } else {
-                    pm.setComponentEnabledSetting(componentName,
+                    pm.setComponentEnabledSetting(volReceiver,
                             PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                             PackageManager.DONT_KILL_APP);
                     editor.putString("Notifications", "On");
+                }
+                editor.apply();
+            }
+        });
+
+        Switch volSwitch = (Switch) findViewById(R.id.auto_volume_switch);
+        if (autoVolume != null && autoVolume.equals("On"))
+            volSwitch.setChecked(true);
+        else
+            volSwitch.setChecked(false);
+        volSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (!b) {
+                    editor.putString("AutoVolume", "Off");
+                } else {
+                    editor.putString("AutoVolume", "On");
                 }
                 editor.apply();
             }

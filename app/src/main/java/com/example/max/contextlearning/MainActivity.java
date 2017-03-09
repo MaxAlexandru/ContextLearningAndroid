@@ -91,8 +91,9 @@ public class MainActivity extends AppCompatActivity {
             editor.apply();
 
             final PackageManager pm  = this.getPackageManager();
-            final ComponentName componentName = new ComponentName(this, VolumeReceiver.class);
-            pm.setComponentEnabledSetting(componentName,
+            final ComponentName volReceiver = new ComponentName(this, VolumeReceiver.class);
+
+            pm.setComponentEnabledSetting(volReceiver,
                     PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                     PackageManager.DONT_KILL_APP);
         }

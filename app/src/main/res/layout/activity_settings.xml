@@ -24,5 +24,23 @@
             android:layout_weight="1"
             android:id="@+id/notification_switch" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="10dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="15sp"
+            android:textColor="#000000"
+            android:text="Toggle auto volume" />
+        <Switch
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/auto_volume_switch" />
+    </LinearLayout>
 
 </LinearLayout>

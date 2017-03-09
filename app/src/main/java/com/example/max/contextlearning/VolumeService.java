@@ -1,10 +1,12 @@
 package com.example.max.contextlearning;
 
-import android.app.IntentService;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -15,21 +17,23 @@ import java.util.ArrayList;
  * Created by Max on 3/6/2017.
  */
 
-public class VolumeService extends IntentService {
+public class VolumeService extends Service {
 
     public VolumeService() {
-        super("VolumeService");
+
     }
 
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
-        System.out.println("Service has started");
-
-        System.out.println("Here");
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        Log.i("VOLSERVICE", "Service has started");
 
         final Context context = this;
+        final SharedPreferences sharedPref = getSharedPreferences(
+                getString(R.string.settings_filename),Context.MODE_PRIVATE);
+        final String mFileName = getExternalCacheDir().getAbsolutePath() + "/audiorecordtest.3gp";
 
-        new Thread(new Runnable(){
+        Runnable r = new Runnable(){
             public void run() {
                 // TODO Auto-generated method stub
                 while (true) {
@@ -38,9 +42,9 @@ public class VolumeService extends IntentService {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    //REST OF CODE HERE//
-                    String mFileName = getExternalCacheDir().getAbsolutePath();
-                    mFileName += "/audiorecordtest.3gp";
+
+                    String autoVolume = sharedPref.getString("AutoVolume", null);
+                    if (autoVolume != null && autoVolume.equals("On")) {
 
                     /* Starts recording for 5 seconds. */
                     final MediaRecorder mRecorder = new MediaRecorder();
@@ -82,13 +86,24 @@ public class VolumeService extends IntentService {
                             AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
                             am.setStreamVolume(AudioManager.STREAM_RING, vol, 0);
 
-                            System.out.println(amp);
+                            Log.i("VOLSERVICE", amp + "");
                         }
                     });
                     mRecorder.start();
                     mRecorder.getMaxAmplitude();
+                    }
                 }
             }
-        }).start();
+        };
+        Thread volThread = new Thread(r);
+        volThread.start();
+
+        return Service.START_STICKY;
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 }
