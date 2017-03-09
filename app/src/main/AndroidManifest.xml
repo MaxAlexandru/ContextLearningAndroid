@@ -36,8 +36,9 @@
                 android:value=".MainActivity" />
         </activity>
         <activity android:name=".KbActivity" />
-        <activity android:name=".ManualActivity" />
+        <activity android:name=".SettingsActivity" />
         <activity android:name=".ReadEnvActivity" />
+
         <service android:name=".VolumeService" />
     </application>
 

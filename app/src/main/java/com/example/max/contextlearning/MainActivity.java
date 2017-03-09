@@ -1,8 +1,10 @@
 package com.example.max.contextlearning;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +15,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         String[] menuItems = {
                 "Read Environment",
                 "Knowledge Base",
-                "Manual Mode"
+                "Settings"
         };
 
         ListAdapter menuAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuItems);
@@ -60,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intentKb = new Intent(context, KbActivity.class);
-                Intent intentManual = new Intent(context, ManualActivity.class);
+                Intent intentSettings = new Intent(context, SettingsActivity.class);
                 Intent intentReadEnv = new Intent(context, ReadEnvActivity.class);
 
                 switch (i) {
@@ -71,10 +75,26 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intentKb);
                         break;
                     case 2:
-                        startActivity(intentManual);
+                        startActivity(intentSettings);
                         break;
                 }
             }
         });
+
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                getString(R.string.settings_filename), Context.MODE_PRIVATE);
+        Map<String, ?> settings = sharedPref.getAll();
+        if (settings.isEmpty()) {
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("Notifications", "Off");
+            editor.putString("AutoVolume", "Off");
+            editor.apply();
+
+            final PackageManager pm  = this.getPackageManager();
+            final ComponentName componentName = new ComponentName(this, VolumeReceiver.class);
+            pm.setComponentEnabledSetting(componentName,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP);
+        }
     }
 }
