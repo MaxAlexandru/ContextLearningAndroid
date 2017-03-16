@@ -40,6 +40,8 @@
         <activity android:name=".ReadEnvActivity" />
 
         <service android:name=".VolumeService" />
+
+        <activity android:name=".ReadIlluminance"></activity>
     </application>
 
 </manifest>

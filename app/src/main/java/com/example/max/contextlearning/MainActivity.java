@@ -53,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
         String[] menuItems = {
                 "Read Environment",
                 "Knowledge Base",
-                "Settings"
+                "Settings",
+                "Read Light"
         };
 
         ListAdapter menuAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuItems);
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intentKb = new Intent(context, KbActivity.class);
                 Intent intentSettings = new Intent(context, SettingsActivity.class);
                 Intent intentReadEnv = new Intent(context, ReadEnvActivity.class);
+                Intent intentReadLight = new Intent(context, ReadIlluminance.class);
 
                 switch (i) {
                     case 0:
@@ -77,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
                     case 2:
                         startActivity(intentSettings);
                         break;
+                    case 3:
+                        startActivity(intentReadLight);
                 }
             }
         });
