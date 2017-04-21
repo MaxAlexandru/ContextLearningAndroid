@@ -1,6 +1,8 @@
 package com.example.max.contextlearning;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,29 +18,25 @@ import java.util.Collections;
  * Created by Max on 4/21/2017.
  */
 
-public class ScenarioAdapter extends ArrayAdapter {
+public class ScenariosAddAdapter extends ArrayAdapter {
 
-    private TextView name;
-    private Spinner values;
-    private CheckBox ok;
-
-    public ScenarioAdapter(Context context, ArrayList<String> resource) {
+    public ScenariosAddAdapter(Context context, ArrayList<String> resource) {
         super(context, R.layout.scenario_item, resource);
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View myView;
         if (convertView == null)
             myView = LayoutInflater.from(getContext()).inflate(R.layout.scenario_item, parent, false);
         else
             myView = convertView;
 
-        name = (TextView) myView.findViewById(R.id.scenario_item_name);
-        values = (Spinner) myView.findViewById(R.id.scenario_item_values);
-        ok = (CheckBox) myView.findViewById(R.id.scenario_item_ok);
+        TextView name = (TextView) myView.findViewById(R.id.scenario_item_name);
+        Spinner values = (Spinner) myView.findViewById(R.id.scenario_item_values);
 
-        name.setText(getItem(position) + "");
+        name.setText(getItem(position).toString());
         ArrayList<String> dataSet = new ArrayList<>();
         Collections.addAll(dataSet, Constants.SENSORS_VALUES.get(getItem(position) + ""));
         ArrayAdapter<String> valuesAdapter = new ArrayAdapter<String>(getContext(),
@@ -48,5 +46,4 @@ public class ScenarioAdapter extends ArrayAdapter {
 
         return myView;
     }
-
 }

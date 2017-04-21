@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.max.contextlearning.NewScenario">
+    tools:context="com.example.max.contextlearning.ScenariosAdd">
 
     <ListView
         android:id="@+id/new_scenario_list_view"

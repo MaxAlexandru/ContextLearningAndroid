@@ -57,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
                 "Read Light",
                 "Read Motion",
                 "Context",
-                "Add Scenario"
+                "Add Scenario",
+                "My Scenarios"
         };
 
         ListAdapter menuAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuItems);
@@ -73,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
                 Intent intentReadLight = new Intent(context, ReadIlluminance.class);
                 Intent intentReadMotion = new Intent(context, ReadMotion.class);
                 Intent contextReaderIntent = new Intent(context, ContextReader.class);
-                Intent newScenarioIntent = new Intent(context, NewScenario.class);
+                Intent newScenarioIntent = new Intent(context, ScenariosAdd.class);
+                Intent scenariosIntent = new Intent(context, ScenariosView.class);
 
                 switch (i) {
                     case 0:
@@ -96,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 6:
                         startActivity(newScenarioIntent);
+                        break;
+                    case 7:
+                        startActivity(scenariosIntent);
+                        break;
                 }
             }
         });

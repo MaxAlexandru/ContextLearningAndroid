@@ -5,12 +5,9 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -18,11 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
-public class NewScenario extends AppCompatActivity {
+public class ScenariosAdd extends AppCompatActivity {
 
     private ListView myListView;
     private Button saveButton;
@@ -44,7 +39,7 @@ public class NewScenario extends AppCompatActivity {
 
         ArrayList<String> dataSet = new ArrayList<>();
         Collections.addAll(dataSet, Constants.SENSORS);
-        ListAdapter scenarioAdapter = new ScenarioAdapter(this, dataSet);
+        ListAdapter scenarioAdapter = new ScenariosAddAdapter(this, dataSet);
 
         myListView.setAdapter(scenarioAdapter);
         saveButton.setOnClickListener(new View.OnClickListener() {
