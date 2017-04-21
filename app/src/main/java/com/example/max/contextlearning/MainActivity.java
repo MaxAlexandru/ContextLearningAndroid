@@ -54,7 +54,10 @@ public class MainActivity extends AppCompatActivity {
                 "Read Environment",
                 "Knowledge Base",
                 "Settings",
-                "Read Light"
+                "Read Light",
+                "Read Motion",
+                "Context",
+                "Add Scenario"
         };
 
         ListAdapter menuAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuItems);
@@ -68,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
                 Intent intentSettings = new Intent(context, SettingsActivity.class);
                 Intent intentReadEnv = new Intent(context, ReadEnvActivity.class);
                 Intent intentReadLight = new Intent(context, ReadIlluminance.class);
+                Intent intentReadMotion = new Intent(context, ReadMotion.class);
+                Intent contextReaderIntent = new Intent(context, ContextReader.class);
+                Intent newScenarioIntent = new Intent(context, NewScenario.class);
 
                 switch (i) {
                     case 0:
@@ -81,6 +87,15 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 3:
                         startActivity(intentReadLight);
+                        break;
+                    case 4:
+                        startActivity(intentReadMotion);
+                        break;
+                    case 5:
+                        startActivity(contextReaderIntent);
+                        break;
+                    case 6:
+                        startActivity(newScenarioIntent);
                 }
             }
         });
