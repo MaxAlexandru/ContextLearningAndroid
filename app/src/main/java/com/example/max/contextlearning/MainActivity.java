@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intentKb = new Intent(context, KbActivity.class);
                 Intent intentSettings = new Intent(context, SettingsActivity.class);
                 Intent intentReadEnv = new Intent(context, ReadEnvActivity.class);
-                Intent intentReadLight = new Intent(context, ReadIlluminance.class);
+                Intent intentReadLight = new Intent(context, DisplayBroadcast.class);
                 Intent intentReadMotion = new Intent(context, ReadMotion.class);
                 Intent contextReaderIntent = new Intent(context, ContextReader.class);
                 Intent newScenarioIntent = new Intent(context, ScenariosAdd.class);
@@ -109,10 +109,12 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPref = context.getSharedPreferences(
                 getString(R.string.settings_filename), Context.MODE_PRIVATE);
         Map<String, ?> settings = sharedPref.getAll();
+        System.out.println(settings);
         if (settings.isEmpty()) {
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString("Notifications", "Off");
             editor.putString("AutoVolume", "Off");
+            editor.putString("SensorsService", "Off");
             editor.apply();
 
             final PackageManager pm  = this.getPackageManager();

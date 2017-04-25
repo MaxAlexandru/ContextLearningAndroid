@@ -41,7 +41,7 @@
 
         <service android:name=".VolumeService" />
 
-        <activity android:name=".ReadIlluminance" />
+        <activity android:name=".DisplayBroadcast" />
         <activity android:name=".ReadMotion" />
         <activity android:name=".ContextReader" />
         <activity android:name=".ScenariosAdd" />

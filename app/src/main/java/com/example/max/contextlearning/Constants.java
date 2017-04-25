@@ -19,4 +19,10 @@ public class Constants {
         SENSORS_VALUES.put("Proximity", new String[] {"Near", "Far"});
         SENSORS_VALUES.put("Light", new String[] {"Outside", "Inside", "Dark"});
     }
+
+    public final static LinkedHashMap<String, String> ACTIONS = new LinkedHashMap<>();
+    static {
+        ACTIONS.put("Light", "com.example.max.contextlearning.LIGHT_SENSOR");
+        ACTIONS.put("Proximity", "com.example.max.contextlearning.PROXIMITY_SENSOR");
+    }
 }
