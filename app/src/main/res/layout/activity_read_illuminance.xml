@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="0 lx"
+        android:text="0"
         android:textSize="36sp" />
 
     <TextView
@@ -22,7 +22,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="0 lx"
+        android:text="0"
+        android:textSize="36sp" />
+
+    <TextView
+        android:id="@+id/noise_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="0"
         android:textSize="36sp" />
 
 </LinearLayout>

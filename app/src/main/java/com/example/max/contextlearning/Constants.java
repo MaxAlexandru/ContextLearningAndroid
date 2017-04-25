@@ -24,5 +24,6 @@ public class Constants {
     static {
         ACTIONS.put("Light", "com.example.max.contextlearning.LIGHT_SENSOR");
         ACTIONS.put("Proximity", "com.example.max.contextlearning.PROXIMITY_SENSOR");
+        ACTIONS.put("Noise", "com.example.max.contextlearning.NOISE_SENSOR");
     }
 }

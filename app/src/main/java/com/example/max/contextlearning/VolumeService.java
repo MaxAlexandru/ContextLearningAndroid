@@ -8,9 +8,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -59,6 +62,7 @@ public class VolumeService extends Service {
     public SensorManager mySensorManager;
     public MySensorListener lightListener, proximityListener;
     private final String TAG = "VOLUME SERVICE";
+    private final int SAMPLE_RATE = 44100;
 
     public VolumeService() {
         lightListener = new MySensorListener(Sensor.TYPE_LIGHT);
@@ -70,19 +74,29 @@ public class VolumeService extends Service {
         super.onStartCommand(intent, flags, startId);
         Log.i(TAG, "Service has started");
 
-        final Context context = this;
         final SharedPreferences sharedPref = getSharedPreferences(
                 getString(R.string.settings_filename), Context.MODE_PRIVATE);
-        final String mFileName = getExternalCacheDir().getAbsolutePath() + "/audiorecordtest.3gp";
 
         mySensorManager = (SensorManager) getSystemService(android.content.Context.SENSOR_SERVICE);
 
+        final int buffSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT);
+        final AudioRecord audioRecord = new AudioRecord(
+                MediaRecorder.AudioSource.DEFAULT,
+                SAMPLE_RATE,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT,
+                buffSize);
+
         Runnable r = new Runnable(){
+            private String sensorsServiceStatus;
+            private int prevSensorsStatus;
+
             public void run() {
                 /* Registering sensors listeners. */
-                String sensorsServiceStatus = sharedPref.getString("SensorsService", null);
-//                Log.i(TAG, sensorsServiceStatus);
-                int prevSensorsStatus = 0;
+                sensorsServiceStatus = sharedPref.getString("SensorsService", null);
+                prevSensorsStatus = 0;
                 if (sensorsServiceStatus != null && sensorsServiceStatus.equals("On")) {
                     prevSensorsStatus = 1;
                     mySensorManager.registerListener(
@@ -96,85 +110,57 @@ public class VolumeService extends Service {
                     Log.i(TAG, "Sensor listeners registered");
                 }
 
+                audioRecord.startRecording();
+
                 while (true) {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    readSensors();
+                }
+            }
 
-                    sensorsServiceStatus = sharedPref.getString("SensorsService", null);
-                    if (sensorsServiceStatus != null && sensorsServiceStatus.equals("Off")) {
-                        if (prevSensorsStatus == 1) {
-                            mySensorManager.unregisterListener(lightListener);
-                            mySensorManager.unregisterListener(proximityListener);
-                            Log.i(TAG, "Sensor listeners unregistered");
-                            prevSensorsStatus = 0;
-                        }
-                    } else if (sensorsServiceStatus != null && sensorsServiceStatus.equals("On")) {
-                        if (prevSensorsStatus == 0) {
-                            mySensorManager.registerListener(
-                                    lightListener,
-                                    mySensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
-                                    SensorManager.SENSOR_DELAY_NORMAL);
-                            mySensorManager.registerListener(
-                                    proximityListener,
-                                    mySensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
-                                    SensorManager.SENSOR_DELAY_NORMAL);
-                            Log.i(TAG, "Sensor listeners registered");
-                            prevSensorsStatus = 1;
-                        }
+            public void readSensors() {
+                sensorsServiceStatus = sharedPref.getString("SensorsService", null);
+                if (sensorsServiceStatus != null && sensorsServiceStatus.equals("Off")) {
+                    if (prevSensorsStatus == 1) {
+                        mySensorManager.unregisterListener(lightListener);
+                        mySensorManager.unregisterListener(proximityListener);
+                        audioRecord.stop();
+                        Log.i(TAG, "Sensor listeners unregistered");
+                        prevSensorsStatus = 0;
+                    }
+                } else if (sensorsServiceStatus != null && sensorsServiceStatus.equals("On")) {
+                    if (prevSensorsStatus == 0) {
+                        mySensorManager.registerListener(
+                                lightListener,
+                                mySensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
+                                SensorManager.SENSOR_DELAY_NORMAL);
+                        mySensorManager.registerListener(
+                                proximityListener,
+                                mySensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
+                                SensorManager.SENSOR_DELAY_NORMAL);
+                        audioRecord.startRecording();
+                        Log.i(TAG, "Sensor listeners registered");
+                        prevSensorsStatus = 1;
                     }
 
-//                    String autoVolume = sharedPref.getString("AutoVolume", null);
-//                    if (autoVolume != null && autoVolume.equals("On")) {
-//
-//                    /* Starts recording for 5 seconds. */
-//                    final MediaRecorder mRecorder = new MediaRecorder();
-//                    mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-//                    mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-//                    mRecorder.setOutputFile(mFileName);
-//                    mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-//                    mRecorder.setMaxDuration(1000);
-//
-//                    try {
-//                        mRecorder.prepare();
-//                    } catch (IOException e) {
-//                        Log.e("Error", "prepare() failed");
-//                    }
-//
-//                    mRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
-//                        @Override
-//                        public void onInfo(MediaRecorder mediaRecorder, int i, int i1) {
-//                            int amp = mRecorder.getMaxAmplitude();
-//
-//                            mRecorder.stop();
-//                            mRecorder.release();
-//
-//                            ContextDbHelper contextDb = new ContextDbHelper(context);
-//                            ArrayList<String> data = contextDb.getAll();
-//
-//                            int vol = 1;
-//                            int dist = 50000;
-//                            for (String item : data) {
-//                                String[] cols = item.split("\\|");
-//                                int noise = Integer.parseInt(cols[1]);
-//                                int prevVol = Integer.parseInt(cols[2]);
-//                                int newDist = Math.abs(amp - noise);
-//                                if (newDist < dist) {
-//                                    dist = newDist;
-//                                    vol = prevVol;
-//                                }
-//                            }
-//                            AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
-//                            am.setStreamVolume(AudioManager.STREAM_RING, vol, 0);
-//
-//                            Log.i("VOLSERVICE", amp + "");
-//                        }
-//                    });
-//                    mRecorder.start();
-//                    mRecorder.getMaxAmplitude();
-//                    }
+                    /* Read noise level */
+                    short [] buffer = new short[buffSize / 2];
+                    audioRecord.read(buffer, 0, buffSize / 2);
+                    double rms = 0;
+                    for (int i : buffer) {
+                        rms += i * i;
+                    }
+                    rms = Math.sqrt(rms / buffer.length);
+                    double db = 20 * Math.log10(rms);
+                    Log.i(TAG, String.valueOf(db));
+                    Intent noiseIntent = new Intent();
+                    noiseIntent.setAction(Constants.ACTIONS.get("Noise"));
+                    noiseIntent.putExtra("NoiseSensor", db);
+                    sendBroadcast(noiseIntent);
                 }
             }
         };

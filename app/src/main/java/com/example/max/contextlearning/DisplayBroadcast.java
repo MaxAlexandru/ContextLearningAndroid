@@ -27,6 +27,7 @@ public class DisplayBroadcast extends AppCompatActivity {
 
         final TextView light = (TextView) findViewById(R.id.light_text_view);
         final TextView proximity = (TextView) findViewById(R.id.proximity_text_view);
+        final TextView noise = (TextView) findViewById(R.id.noise_text_view);
 
         br = new BroadcastReceiver() {
             @Override
@@ -38,12 +39,16 @@ public class DisplayBroadcast extends AppCompatActivity {
                 } else if (action.equals(Constants.ACTIONS.get("Proximity"))) {
                     String value = intent.getStringExtra("ProximitySensor");
                     proximity.setText(value);
+                } else if (action.equals(Constants.ACTIONS.get("Noise"))) {
+                    double value = intent.getDoubleExtra("NoiseSensor", 0.0);
+                    noise.setText(String.valueOf((int) value) + "dB");
                 }
             }
         };
         intentFilter = new IntentFilter();
         intentFilter.addAction(Constants.ACTIONS.get("Light"));
         intentFilter.addAction(Constants.ACTIONS.get("Proximity"));
+        intentFilter.addAction(Constants.ACTIONS.get("Noise"));
         this.registerReceiver(br, intentFilter);
     }
 
