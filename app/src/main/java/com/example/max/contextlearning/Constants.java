@@ -1,7 +1,5 @@
 package com.example.max.contextlearning;
 
-import android.hardware.Sensor;
-
 import java.util.LinkedHashMap;
 
 /**
@@ -19,10 +17,23 @@ public class Constants {
             "Device Temperature"
     };
 
+    public static final String [] TASKS = {
+            "Silent Volume",
+            "Quite Volume",
+            "Normal Volume",
+            "Loud Volume",
+            "Smart Notifications"
+    };
+
+
     public final static LinkedHashMap<String, String []> SENSORS_VALUES = new LinkedHashMap<>();
     static {
-        SENSORS_VALUES.put("Proximity", new String[] {"Near", "Far"});
         SENSORS_VALUES.put("Light", new String[] {"Dark", "LightBulb", "Daylight"});
+        SENSORS_VALUES.put("Proximity", new String[] {"Near", "Far"});
+        SENSORS_VALUES.put("Noise", new String[] {"Silence", "Normal", "Noisy"});
+        SENSORS_VALUES.put("Gravity", new String[] {"FaceUp", "FaceDown", "Unknown"});
+        SENSORS_VALUES.put("Acceleration", new String[] {"Still", "Moving"});
+        SENSORS_VALUES.put("Device Temperature", new String[] {"Cool", "Normal", "Hot"});
     }
 
     public final static LinkedHashMap<String, String> ACTIONS = new LinkedHashMap<>();
@@ -40,9 +51,9 @@ public class Constants {
         switch (type) {
             case 0:
                 float light = Float.parseFloat(value);
-                if (light <= 50)
+                if (light < 10)
                     res = "Dark";
-                else if (light <= 1000)
+                else if (light < 1000)
                     res = "LightBulb";
                 else
                     res = "Daylight";
@@ -56,7 +67,7 @@ public class Constants {
                 break;
             case 2:
                 double db = Double.parseDouble(value);
-                if (db < 10)
+                if (db < 20)
                     res = "Silence";
                 else if (db < 40)
                     res = "Normal";
@@ -67,9 +78,9 @@ public class Constants {
                 String [] vals1 = value.split(" ");
                 float z1 = Float.parseFloat(vals1[2]);
                 if (z1 >= 9.5)
-                    res = "Face up";
+                    res = "FaceUp";
                 else if (z1 <= -9.5)
-                    res = "Face down";
+                    res = "FaceDown";
                 else
                     res = "Unknown";
                 break;

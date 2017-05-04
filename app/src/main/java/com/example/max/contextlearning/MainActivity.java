@@ -55,9 +55,8 @@ public class MainActivity extends AppCompatActivity {
                 "Knowledge Base",
                 "Settings",
                 "Display Environment",
-                "Context",
-                "Add Scenario",
-                "My Scenarios",
+                "Add Scenarios",
+                "View Scenarios",
                 "Training Set"
         };
 
@@ -72,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intentSettings = new Intent(context, SettingsActivity.class);
                 Intent intentReadEnv = new Intent(context, ReadEnvActivity.class);
                 Intent intentDispBcast = new Intent(context, DisplayBroadcast.class);
-                Intent contextReaderIntent = new Intent(context, ContextReader.class);
                 Intent newScenarioIntent = new Intent(context, ScenariosAdd.class);
                 Intent scenariosIntent = new Intent(context, ScenariosView.class);
                 Intent trainingSetIntent = new Intent(context, TrainingSetDb.class);
@@ -91,15 +89,12 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intentDispBcast);
                         break;
                     case 4:
-                        startActivity(contextReaderIntent);
-                        break;
-                    case 5:
                         startActivity(newScenarioIntent);
                         break;
-                    case 6:
+                    case 5:
                         startActivity(scenariosIntent);
                         break;
-                    case 7:
+                    case 6:
                         startActivity(trainingSetIntent);
                 }
             }

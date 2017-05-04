@@ -126,4 +126,10 @@ public class TrainingSetDbHelper extends SQLiteOpenHelper {
 
         return items;
     }
+
+    public void deleteAll() {
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.execSQL(SQL_DELETE_ENTRIES);
+        onCreate(sqLiteDatabase);
+    }
 }

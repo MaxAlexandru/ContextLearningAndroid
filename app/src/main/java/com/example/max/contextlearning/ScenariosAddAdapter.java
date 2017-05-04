@@ -39,7 +39,7 @@ public class ScenariosAddAdapter extends ArrayAdapter {
         name.setText(getItem(position).toString());
         ArrayList<String> dataSet = new ArrayList<>();
         Collections.addAll(dataSet, Constants.SENSORS_VALUES.get(getItem(position) + ""));
-        ArrayAdapter<String> valuesAdapter = new ArrayAdapter<String>(getContext(),
+        ArrayAdapter<String> valuesAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item);
         valuesAdapter.addAll(dataSet);
         values.setAdapter(valuesAdapter);

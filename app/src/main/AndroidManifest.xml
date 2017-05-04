@@ -43,7 +43,6 @@
 
         <activity android:name=".DisplayBroadcast" />
         <activity android:name=".ReadMotion" />
-        <activity android:name=".ContextReader" />
         <activity android:name=".ScenariosAdd" />
         <activity android:name=".ScenariosView" />
         <activity android:name=".TrainingSetDb"></activity>

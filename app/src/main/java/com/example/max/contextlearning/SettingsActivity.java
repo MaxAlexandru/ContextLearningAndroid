@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        final Context context = this;
 
         final PackageManager pm  = this.getPackageManager();
         final ComponentName volReceiver = new ComponentName(this, VolumeReceiver.class);
@@ -42,7 +45,21 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 sharedPref.edit().clear().apply();
+                Toast toast = Toast.makeText(context, "Settings set to default!", Toast.LENGTH_SHORT);
+                toast.show();
                 Log.i(TAG, "Settings set to default");
+            }
+        });
+
+        Button deleteTrainSets = (Button) findViewById(R.id.delete_train_sets_button);
+        deleteTrainSets.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TrainingSetDbHelper db = new TrainingSetDbHelper(context);
+                db.deleteAll();
+                Toast toast = Toast.makeText(context, "Training sets deleted!", Toast.LENGTH_SHORT);
+                toast.show();
+                Log.i(TAG, "Training sets deleted");
             }
         });
 
