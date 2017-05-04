@@ -54,8 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 "Read Environment",
                 "Knowledge Base",
                 "Settings",
-                "Read Light",
-                "Read Motion",
+                "Display Environment",
                 "Context",
                 "Add Scenario",
                 "My Scenarios"
@@ -71,8 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intentKb = new Intent(context, KbActivity.class);
                 Intent intentSettings = new Intent(context, SettingsActivity.class);
                 Intent intentReadEnv = new Intent(context, ReadEnvActivity.class);
-                Intent intentReadLight = new Intent(context, DisplayBroadcast.class);
-                Intent intentReadMotion = new Intent(context, ReadMotion.class);
+                Intent intentDispBcast = new Intent(context, DisplayBroadcast.class);
                 Intent contextReaderIntent = new Intent(context, ContextReader.class);
                 Intent newScenarioIntent = new Intent(context, ScenariosAdd.class);
                 Intent scenariosIntent = new Intent(context, ScenariosView.class);
@@ -88,18 +86,15 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intentSettings);
                         break;
                     case 3:
-                        startActivity(intentReadLight);
+                        startActivity(intentDispBcast);
                         break;
                     case 4:
-                        startActivity(intentReadMotion);
-                        break;
-                    case 5:
                         startActivity(contextReaderIntent);
                         break;
-                    case 6:
+                    case 5:
                         startActivity(newScenarioIntent);
                         break;
-                    case 7:
+                    case 6:
                         startActivity(scenariosIntent);
                         break;
                 }

@@ -7,30 +7,23 @@
     android:layout_centerInParent="false"
     android:layout_centerVertical="false"
     android:orientation="vertical"
-    tools:context="com.example.max.contextlearning.ReadIlluminance">
+    tools:context="com.example.max.contextlearning.DisplayBroadcast">
 
-    <TextView
-        android:id="@+id/light_text_view"
+    <ListView
+        android:id="@+id/disp_bcast_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
+    </ListView>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Scenario name"/>
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="0"
-        android:textSize="36sp" />
-
-    <TextView
-        android:id="@+id/proximity_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="0"
-        android:textSize="36sp" />
-
-    <TextView
-        android:id="@+id/noise_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="0"
-        android:textSize="36sp" />
+        android:text="Read Scenario"/>
 
 </LinearLayout>

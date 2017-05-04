@@ -10,8 +10,10 @@ import java.util.LinkedHashMap;
 public class Constants {
 
     public static final String [] SENSORS = {
+            "Light",
             "Proximity",
-            "Light"
+            "Noise",
+            "Gravity"
     };
 
     public final static LinkedHashMap<String, String []> SENSORS_VALUES = new LinkedHashMap<>();
@@ -25,5 +27,6 @@ public class Constants {
         ACTIONS.put("Light", "com.example.max.contextlearning.LIGHT_SENSOR");
         ACTIONS.put("Proximity", "com.example.max.contextlearning.PROXIMITY_SENSOR");
         ACTIONS.put("Noise", "com.example.max.contextlearning.NOISE_SENSOR");
+        ACTIONS.put("Gravity", "com.example.max.contextlearning.GRAVITY_SENSOR");
     }
 }

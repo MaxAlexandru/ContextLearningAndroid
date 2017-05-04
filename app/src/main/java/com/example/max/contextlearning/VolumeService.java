@@ -9,16 +9,11 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Created by Max on 3/6/2017.
@@ -26,7 +21,8 @@ import java.util.ArrayList;
 
 public class VolumeService extends Service {
 
-    public class MySensorListener implements SensorEventListener {
+    /* Sensor Listener Class. */
+    private class MySensorListener implements SensorEventListener {
 
         private int type;
 
@@ -36,37 +32,61 @@ public class VolumeService extends Service {
 
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-            String value = sensorEvent.values[0] + "";
-            Log.i("SensorService", value);
-
+            String value;
             Intent intent = new Intent();
             switch (type) {
                 case Sensor.TYPE_LIGHT:
+                    value = sensorEvent.values[0] + "";
+                    Log.i("SensorService", value);
                     intent.setAction(Constants.ACTIONS.get("Light"));
                     intent.putExtra("LightSensor", value);
                     break;
                 case Sensor.TYPE_PROXIMITY:
+                    value = sensorEvent.values[0] + "";
+                    Log.i("SensorService", value);
                     intent.setAction(Constants.ACTIONS.get("Proximity"));
                     intent.putExtra("ProximitySensor", value);
                     break;
+                case Sensor.TYPE_GRAVITY:
+                    value = sensorEvent.values[0] + " " +
+                            sensorEvent.values[1] + " " +
+                            sensorEvent.values[2];
+                    Log.i("SensorService", value);
+                    intent.setAction(Constants.ACTIONS.get("Gravity"));
+                    intent.putExtra("GravitySensor", value);
             }
             sendBroadcast(intent);
         }
 
         @Override
-        public void onAccuracyChanged(Sensor sensor, int i) {
-
-        }
+        public void onAccuracyChanged(Sensor sensor, int i) { }
     }
 
     public SensorManager mySensorManager;
-    public MySensorListener lightListener, proximityListener;
+    public MySensorListener lightListener;
+    public MySensorListener proximityListener;
+    public MySensorListener gravityListener;
+    public AudioRecord audioRecord;
+    public int buffSize;
+    public SharedPreferences sharedPref;
     private final String TAG = "VOLUME SERVICE";
     private final int SAMPLE_RATE = 44100;
 
     public VolumeService() {
         lightListener = new MySensorListener(Sensor.TYPE_LIGHT);
         proximityListener = new MySensorListener(Sensor.TYPE_PROXIMITY);
+        gravityListener = new MySensorListener(Sensor.TYPE_GRAVITY);
+
+        buffSize = AudioRecord.getMinBufferSize(
+                SAMPLE_RATE,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT);
+        audioRecord = new AudioRecord(
+                MediaRecorder.AudioSource.DEFAULT,
+                SAMPLE_RATE,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT,
+                buffSize);
     }
 
     @Override
@@ -74,20 +94,10 @@ public class VolumeService extends Service {
         super.onStartCommand(intent, flags, startId);
         Log.i(TAG, "Service has started");
 
-        final SharedPreferences sharedPref = getSharedPreferences(
-                getString(R.string.settings_filename), Context.MODE_PRIVATE);
-
         mySensorManager = (SensorManager) getSystemService(android.content.Context.SENSOR_SERVICE);
-
-        final int buffSize = AudioRecord.getMinBufferSize(SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT);
-        final AudioRecord audioRecord = new AudioRecord(
-                MediaRecorder.AudioSource.DEFAULT,
-                SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT,
-                buffSize);
+        sharedPref = getSharedPreferences(
+                getString(R.string.settings_filename),
+                Context.MODE_PRIVATE);
 
         Runnable r = new Runnable(){
             private String sensorsServiceStatus;
@@ -99,19 +109,11 @@ public class VolumeService extends Service {
                 prevSensorsStatus = 0;
                 if (sensorsServiceStatus != null && sensorsServiceStatus.equals("On")) {
                     prevSensorsStatus = 1;
-                    mySensorManager.registerListener(
-                            lightListener,
-                            mySensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
-                            SensorManager.SENSOR_DELAY_NORMAL);
-                    mySensorManager.registerListener(
-                            proximityListener,
-                            mySensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
-                            SensorManager.SENSOR_DELAY_NORMAL);
+                    registerSensors();
+                    audioRecord.startRecording();
                     Log.i(TAG, "Sensor listeners registered");
                 }
-
-                audioRecord.startRecording();
-
+                /* Reading sensors in background. */
                 while (true) {
                     try {
                         Thread.sleep(1000);
@@ -126,27 +128,18 @@ public class VolumeService extends Service {
                 sensorsServiceStatus = sharedPref.getString("SensorsService", null);
                 if (sensorsServiceStatus != null && sensorsServiceStatus.equals("Off")) {
                     if (prevSensorsStatus == 1) {
-                        mySensorManager.unregisterListener(lightListener);
-                        mySensorManager.unregisterListener(proximityListener);
+                        unregisterSensors();
                         audioRecord.stop();
                         Log.i(TAG, "Sensor listeners unregistered");
                         prevSensorsStatus = 0;
                     }
                 } else if (sensorsServiceStatus != null && sensorsServiceStatus.equals("On")) {
                     if (prevSensorsStatus == 0) {
-                        mySensorManager.registerListener(
-                                lightListener,
-                                mySensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
-                                SensorManager.SENSOR_DELAY_NORMAL);
-                        mySensorManager.registerListener(
-                                proximityListener,
-                                mySensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
-                                SensorManager.SENSOR_DELAY_NORMAL);
+                        registerSensors();
                         audioRecord.startRecording();
                         Log.i(TAG, "Sensor listeners registered");
                         prevSensorsStatus = 1;
                     }
-
                     /* Read noise level */
                     short [] buffer = new short[buffSize / 2];
                     audioRecord.read(buffer, 0, buffSize / 2);
@@ -170,6 +163,27 @@ public class VolumeService extends Service {
         return Service.START_STICKY;
     }
 
+    public void registerSensors() {
+        mySensorManager.registerListener(
+                lightListener,
+                mySensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        mySensorManager.registerListener(
+                proximityListener,
+                mySensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        mySensorManager.registerListener(
+                gravityListener,
+                mySensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
+                SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    public void unregisterSensors() {
+        mySensorManager.unregisterListener(lightListener);
+        mySensorManager.unregisterListener(proximityListener);
+        mySensorManager.unregisterListener(gravityListener);
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -178,9 +192,10 @@ public class VolumeService extends Service {
 
     @Override
     public void onDestroy() {
-        mySensorManager.unregisterListener(lightListener);
-        mySensorManager.unregisterListener(proximityListener);
+        unregisterSensors();
         Log.i(TAG, "Sensor listeners unregistered");
+        audioRecord.stop();
+        audioRecord.release();
         super.onDestroy();
     }
 }
