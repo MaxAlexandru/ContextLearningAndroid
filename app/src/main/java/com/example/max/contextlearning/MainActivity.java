@@ -57,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
                 "Display Environment",
                 "Context",
                 "Add Scenario",
-                "My Scenarios"
+                "My Scenarios",
+                "Training Set"
         };
 
         ListAdapter menuAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuItems);
@@ -74,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent contextReaderIntent = new Intent(context, ContextReader.class);
                 Intent newScenarioIntent = new Intent(context, ScenariosAdd.class);
                 Intent scenariosIntent = new Intent(context, ScenariosView.class);
+                Intent trainingSetIntent = new Intent(context, TrainingSetDb.class);
 
                 switch (i) {
                     case 0:
@@ -97,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
                     case 6:
                         startActivity(scenariosIntent);
                         break;
+                    case 7:
+                        startActivity(trainingSetIntent);
                 }
             }
         });

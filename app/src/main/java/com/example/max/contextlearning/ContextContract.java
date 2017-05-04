@@ -16,4 +16,15 @@ public class ContextContract {
         public static final String COLUMN_NAME_NOISE = "noise";
         public static final String COLUMN_NAME_VOLUME = "volume";
     }
+
+    public static class TrainingSet implements BaseColumns {
+        public static final String TABLE_NAME = "TrainingSet";
+        public static final String COLUMN_NAME_LABEL = "label";
+        public static final String COLUMN_NAME_LIGHT = "light";
+        public static final String COLUMN_NAME_PROXIMITY = "proximity";
+        public static final String COLUMN_NAME_NOISE = "noise";
+        public static final String COLUMN_NAME_GRAVITY = "gravity";
+        public static final String COLUMN_NAME_ACCELERATION = "acceleration";
+        public static final String COLUMN_NAME_DEVICE_TMP = "device_tmp";
+    }
 }

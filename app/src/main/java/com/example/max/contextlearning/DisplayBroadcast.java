@@ -4,12 +4,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.BatteryManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -47,6 +52,13 @@ public class DisplayBroadcast extends AppCompatActivity {
                 } else if (action.equals(Constants.ACTIONS.get("Gravity"))) {
                     String value = intent.getStringExtra("GravitySensor");
                     dataSet.set(3, value);
+                } else if (action.equals(Constants.ACTIONS.get("Acceleration"))) {
+                    String value = intent.getStringExtra("AccelerationSensor");
+                    dataSet.set(4, value);
+                } else if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
+                    int t = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
+                    float ft = ((float) t) / 10;
+                    dataSet.set(5, String.valueOf(ft));
                 }
                 arrayAdapter.notifyDataSetChanged();
             }
@@ -54,7 +66,29 @@ public class DisplayBroadcast extends AppCompatActivity {
         intentFilter = new IntentFilter();
         for (Map.Entry<String, String> entry : Constants.ACTIONS.entrySet())
             intentFilter.addAction(entry.getValue());
+        intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
         this.registerReceiver(br, intentFilter);
+
+        final TrainingSetDbHelper trainingSet = new TrainingSetDbHelper(this);
+        final Toast failToast = Toast.makeText(this, "No label error!", Toast.LENGTH_SHORT);
+        final Toast okToast = Toast.makeText(this, "Entry added!", Toast.LENGTH_SHORT);
+        Button saveButton = (Button) findViewById(R.id.disp_bcast_save_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<String> newEntry = new ArrayList<>();
+                EditText editText = (EditText) findViewById(R.id.disp_bcast_label_edit_text);
+                if (editText.getText().toString().trim().length() == 0)
+                    failToast.show();
+                else {
+                    newEntry.add(editText.getText().toString());
+                    for (int i = 0; i < dataSet.size(); i++)
+                        newEntry.add(Constants.beautify(i, dataSet.get(i)));
+                    trainingSet.add(newEntry);
+                    okToast.show();
+                }
+            }
+        });
     }
 
     @Override

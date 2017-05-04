@@ -54,6 +54,15 @@ public class VolumeService extends Service {
                     Log.i("SensorService", value);
                     intent.setAction(Constants.ACTIONS.get("Gravity"));
                     intent.putExtra("GravitySensor", value);
+                    break;
+                case Sensor.TYPE_LINEAR_ACCELERATION:
+                    value = sensorEvent.values[0] + " " +
+                            sensorEvent.values[1] + " " +
+                            sensorEvent.values[2];
+                    Log.i("SensorService", value);
+                    intent.setAction(Constants.ACTIONS.get("Acceleration"));
+                    intent.putExtra("AccelerationSensor", value);
+                    break;
             }
             sendBroadcast(intent);
         }
@@ -66,6 +75,7 @@ public class VolumeService extends Service {
     public MySensorListener lightListener;
     public MySensorListener proximityListener;
     public MySensorListener gravityListener;
+    public MySensorListener accelerationListener;
     public AudioRecord audioRecord;
     public int buffSize;
     public SharedPreferences sharedPref;
@@ -76,17 +86,7 @@ public class VolumeService extends Service {
         lightListener = new MySensorListener(Sensor.TYPE_LIGHT);
         proximityListener = new MySensorListener(Sensor.TYPE_PROXIMITY);
         gravityListener = new MySensorListener(Sensor.TYPE_GRAVITY);
-
-        buffSize = AudioRecord.getMinBufferSize(
-                SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT);
-        audioRecord = new AudioRecord(
-                MediaRecorder.AudioSource.DEFAULT,
-                SAMPLE_RATE,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT,
-                buffSize);
+        accelerationListener = new MySensorListener(Sensor.TYPE_LINEAR_ACCELERATION);
     }
 
     @Override
@@ -110,7 +110,6 @@ public class VolumeService extends Service {
                 if (sensorsServiceStatus != null && sensorsServiceStatus.equals("On")) {
                     prevSensorsStatus = 1;
                     registerSensors();
-                    audioRecord.startRecording();
                     Log.i(TAG, "Sensor listeners registered");
                 }
                 /* Reading sensors in background. */
@@ -129,14 +128,12 @@ public class VolumeService extends Service {
                 if (sensorsServiceStatus != null && sensorsServiceStatus.equals("Off")) {
                     if (prevSensorsStatus == 1) {
                         unregisterSensors();
-                        audioRecord.stop();
                         Log.i(TAG, "Sensor listeners unregistered");
                         prevSensorsStatus = 0;
                     }
                 } else if (sensorsServiceStatus != null && sensorsServiceStatus.equals("On")) {
                     if (prevSensorsStatus == 0) {
                         registerSensors();
-                        audioRecord.startRecording();
                         Log.i(TAG, "Sensor listeners registered");
                         prevSensorsStatus = 1;
                     }
@@ -176,12 +173,30 @@ public class VolumeService extends Service {
                 gravityListener,
                 mySensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY),
                 SensorManager.SENSOR_DELAY_NORMAL);
+        mySensorManager.registerListener(
+                accelerationListener,
+                mySensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION),
+                SensorManager.SENSOR_DELAY_NORMAL);
+        buffSize = AudioRecord.getMinBufferSize(
+                SAMPLE_RATE,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT);
+        audioRecord = new AudioRecord(
+                MediaRecorder.AudioSource.DEFAULT,
+                SAMPLE_RATE,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT,
+                buffSize);
+        audioRecord.startRecording();
     }
 
     public void unregisterSensors() {
         mySensorManager.unregisterListener(lightListener);
         mySensorManager.unregisterListener(proximityListener);
         mySensorManager.unregisterListener(gravityListener);
+        mySensorManager.unregisterListener(accelerationListener);
+        audioRecord.stop();
+        audioRecord.release();
     }
 
     @Nullable
@@ -194,8 +209,6 @@ public class VolumeService extends Service {
     public void onDestroy() {
         unregisterSensors();
         Log.i(TAG, "Sensor listeners unregistered");
-        audioRecord.stop();
-        audioRecord.release();
         super.onDestroy();
     }
 }

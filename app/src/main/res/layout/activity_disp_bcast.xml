@@ -17,10 +17,12 @@
     </ListView>
 
     <EditText
+        android:id="@+id/disp_bcast_label_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Scenario name"/>
     <Button
+        android:id="@+id/disp_bcast_save_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

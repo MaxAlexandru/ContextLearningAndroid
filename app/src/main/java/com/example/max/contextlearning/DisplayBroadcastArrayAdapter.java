@@ -37,7 +37,12 @@ public class DisplayBroadcastArrayAdapter extends ArrayAdapter {
         TextView value = (TextView) myView.findViewById(R.id.sensor_value_text_view);
 
         name.setText(Constants.SENSORS[position]);
-        value.setText(item);
+        if (position == 2)
+            value.setText(item + "Db");
+        else if (position == 5)
+            value.setText(item + " \u2103");
+        else
+            value.setText(item);
 
         return myView;
     }
