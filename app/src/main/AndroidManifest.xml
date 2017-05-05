@@ -45,7 +45,8 @@
         <activity android:name=".ReadMotion" />
         <activity android:name=".ScenariosAdd" />
         <activity android:name=".ScenariosView" />
-        <activity android:name=".TrainingSetDb"></activity>
+        <activity android:name=".TrainingSetDb" />
+        <activity android:name=".CurrentState"></activity>
     </application>
 
 </manifest>

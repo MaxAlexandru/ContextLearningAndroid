@@ -81,6 +81,7 @@ public class VolumeService extends Service {
     public SharedPreferences sharedPref;
     private final String TAG = "VOLUME SERVICE";
     private final int SAMPLE_RATE = 44100;
+    private Runnable r;
 
     public VolumeService() {
         lightListener = new MySensorListener(Sensor.TYPE_LIGHT);
@@ -99,64 +100,65 @@ public class VolumeService extends Service {
                 getString(R.string.settings_filename),
                 Context.MODE_PRIVATE);
 
-        Runnable r = new Runnable(){
-            private String sensorsServiceStatus;
-            private int prevSensorsStatus;
+        if (r == null) {
+            r = new Runnable(){
+                private String sensorsServiceStatus;
+                private int prevSensorsStatus;
 
-            public void run() {
-                /* Registering sensors listeners. */
-                sensorsServiceStatus = sharedPref.getString("SensorsService", null);
-                prevSensorsStatus = 0;
-                if (sensorsServiceStatus != null && sensorsServiceStatus.equals("On")) {
-                    prevSensorsStatus = 1;
-                    registerSensors();
-                    Log.i(TAG, "Sensor listeners registered");
-                }
-                /* Reading sensors in background. */
-                while (true) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    readSensors();
-                }
-            }
-
-            public void readSensors() {
-                sensorsServiceStatus = sharedPref.getString("SensorsService", null);
-                if (sensorsServiceStatus != null && sensorsServiceStatus.equals("Off")) {
-                    if (prevSensorsStatus == 1) {
-                        unregisterSensors();
-                        Log.i(TAG, "Sensor listeners unregistered");
-                        prevSensorsStatus = 0;
-                    }
-                } else if (sensorsServiceStatus != null && sensorsServiceStatus.equals("On")) {
-                    if (prevSensorsStatus == 0) {
+                public void run() {
+                    /* Registering sensors listeners. */
+                    sensorsServiceStatus = sharedPref.getString("SensorsService", null);
+                    prevSensorsStatus = 0;
+                    if (sensorsServiceStatus != null && sensorsServiceStatus.equals("On")) {
+                        prevSensorsStatus = 1;
                         registerSensors();
                         Log.i(TAG, "Sensor listeners registered");
-                        prevSensorsStatus = 1;
                     }
-                    /* Read noise level */
-                    short [] buffer = new short[buffSize / 2];
-                    audioRecord.read(buffer, 0, buffSize / 2);
-                    double rms = 0;
-                    for (int i : buffer) {
-                        rms += i * i;
+                    /* Reading sensors in background. */
+                    while (true) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        readSensors();
                     }
-                    rms = Math.sqrt(rms / buffer.length);
-                    double db = 20 * Math.log10(rms);
-                    Log.i(TAG, String.valueOf(db));
-                    Intent noiseIntent = new Intent();
-                    noiseIntent.setAction(Constants.ACTIONS.get("Noise"));
-                    noiseIntent.putExtra("NoiseSensor", db);
-                    sendBroadcast(noiseIntent);
                 }
-            }
-        };
-        Thread volThread = new Thread(r);
-        volThread.start();
 
+                public void readSensors() {
+                    sensorsServiceStatus = sharedPref.getString("SensorsService", null);
+                    if (sensorsServiceStatus != null && sensorsServiceStatus.equals("Off")) {
+                        if (prevSensorsStatus == 1) {
+                            unregisterSensors();
+                            Log.i(TAG, "Sensor listeners unregistered");
+                            prevSensorsStatus = 0;
+                        }
+                    } else if (sensorsServiceStatus != null && sensorsServiceStatus.equals("On")) {
+                        if (prevSensorsStatus == 0) {
+                            registerSensors();
+                            Log.i(TAG, "Sensor listeners registered");
+                            prevSensorsStatus = 1;
+                        }
+                        /* Read noise level */
+                        short [] buffer = new short[buffSize / 2];
+                        audioRecord.read(buffer, 0, buffSize / 2);
+                        double rms = 0;
+                        for (int i : buffer) {
+                            rms += i * i;
+                        }
+                        rms = Math.sqrt(rms / buffer.length);
+                        double db = 20 * Math.log10(rms);
+                        Log.i(TAG, String.valueOf(db));
+                        Intent noiseIntent = new Intent();
+                        noiseIntent.setAction(Constants.ACTIONS.get("Noise"));
+                        noiseIntent.putExtra("NoiseSensor", db);
+                        sendBroadcast(noiseIntent);
+                    }
+                }
+            };
+            Thread volThread = new Thread(r);
+            volThread.start();
+        }
         return Service.START_STICKY;
     }
 
@@ -195,8 +197,12 @@ public class VolumeService extends Service {
         mySensorManager.unregisterListener(proximityListener);
         mySensorManager.unregisterListener(gravityListener);
         mySensorManager.unregisterListener(accelerationListener);
-        audioRecord.stop();
-        audioRecord.release();
+        try {
+            audioRecord.stop();
+            audioRecord.release();
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
     }
 
     @Nullable
@@ -208,7 +214,7 @@ public class VolumeService extends Service {
     @Override
     public void onDestroy() {
         unregisterSensors();
-        Log.i(TAG, "Sensor listeners unregistered");
+        Log.d(TAG, "Sensor listeners unregistered");
         super.onDestroy();
     }
 }
