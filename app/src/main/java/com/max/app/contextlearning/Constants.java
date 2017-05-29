@@ -1,4 +1,6 @@
-package com.example.max.contextlearning;
+package com.max.app.contextlearning;
+
+import android.util.Log;
 
 import java.util.LinkedHashMap;
 
@@ -7,6 +9,8 @@ import java.util.LinkedHashMap;
  */
 
 public class Constants {
+
+    public static final String TAG = "max.contextlearning";
 
     public static final String [] SENSORS = {
             "Light",
@@ -48,6 +52,10 @@ public class Constants {
     public static String beautify(int type, String value) {
         String res = "";
 
+        Log.i(Constants.TAG, "[Constants]: " + value);
+        if (value.equals("None"))
+            return "None";
+
         switch (type) {
             case 0:
                 float light = Float.parseFloat(value);
@@ -75,8 +83,8 @@ public class Constants {
                     res = "Noisy";
                 break;
             case 3:
-                String [] vals1 = value.split(" ");
-                float z1 = Float.parseFloat(vals1[2]);
+                String [] vals1 = value.split("  ");
+                float z1 = Float.parseFloat(vals1[2].split(":")[1]);
                 if (z1 >= 9.5)
                     res = "FaceUp";
                 else if (z1 <= -9.5)
@@ -85,10 +93,10 @@ public class Constants {
                     res = "Unknown";
                 break;
             case 4:
-                String [] vals2 = value.split(" ");
-                float x = Float.parseFloat(vals2[0]);
-                float y = Float.parseFloat(vals2[0]);
-                float z = Float.parseFloat(vals2[0]);
+                String [] vals2 = value.split("  ");
+                float x = Float.parseFloat(vals2[0].split(":")[1]);
+                float y = Float.parseFloat(vals2[1].split(":")[1]);
+                float z = Float.parseFloat(vals2[2].split(":")[1]);
                 if (x < 0.3 && y < 0.3 && z < 0.3)
                     res = "Still";
                 else
