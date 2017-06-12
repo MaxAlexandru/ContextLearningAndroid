@@ -7,7 +7,7 @@
     android:layout_centerInParent="false"
     android:layout_centerVertical="false"
     android:orientation="vertical"
-    tools:context="com.example.max.contextlearning.DisplayBroadcast">
+    tools:context="com.max.app.contextlearning.DisplayBroadcast">
 
     <ListView
         android:id="@+id/disp_bcast_list_view"

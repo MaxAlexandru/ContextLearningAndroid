@@ -1,5 +1,15 @@
 <resources>
-    <string name="app_name">ContextLearning</string>
+    <string name="app_name">Context Learning</string>
     <string name="settings_filename">ContextLearningSettings</string>
     <string name="scenario_file">Scenarios</string>
+    <string name="raw_data_file">RawData</string>
+
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="menu_title_home">Home</string>
+    <string name="menu_title_activities">Activities</string>
+    <string name="menu_title_database">Database</string>
+    <string name="menu_title_settings">Settings</string>
+    <string name="settings_sensors_state">Read sensors</string>
+    <string name="settings_beautify_state">Scientific view</string>
+    <string name="database_empty_message">Database is empty!</string>
 </resources>

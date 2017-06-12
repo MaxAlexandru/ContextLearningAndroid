@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.max.contextlearning">
+    package="com.max.app.contextlearning">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +12,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.max.app.contextlearning.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -19,34 +20,31 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".VolumeReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name=".SaveReceiverPerfect" />
-        <receiver android:name=".SaveReceiverTooQuiet" />
-        <receiver android:name=".SaveReceiverTooLoud" />
+        <service android:name="com.max.app.contextlearning.services.SensorService" />
+
+        <!--<receiver android:name="com.max.app.contextlearning.VolumeReceiver">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.PHONE_STATE" />-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
+        <!--<receiver android:name="com.max.app.contextlearning.SaveReceiverPerfect" />-->
+        <!--<receiver android:name="com.max.app.contextlearning.SaveReceiverTooQuiet" />-->
+        <!--<receiver android:name="com.max.app.contextlearning.SaveReceiverTooLoud" />-->
 
         <activity
-            android:name=".NotificationView"
-            android:parentActivityName=".MainActivity">
+            android:name="com.max.app.contextlearning.NotificationView"
+            android:parentActivityName="com.max.app.contextlearning.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.max.app.contextlearning.MainActivity" />
         </activity>
-        <activity android:name=".KbActivity" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".ReadEnvActivity" />
+        <activity android:name="com.max.app.contextlearning.SettingsActivity" />
+        <activity android:name="com.max.app.contextlearning.ReadEnvActivity" />
 
-        <service android:name=".VolumeService" />
-
-        <activity android:name=".DisplayBroadcast" />
-        <activity android:name=".ReadMotion" />
-        <activity android:name=".ScenariosAdd" />
-        <activity android:name=".ScenariosView" />
-        <activity android:name=".TrainingSetDb" />
-        <activity android:name=".CurrentState"></activity>
+        <activity android:name="com.max.app.contextlearning.DisplayBroadcast" />
+        <activity android:name="com.max.app.contextlearning.ScenariosAdd" />
+        <activity android:name="com.max.app.contextlearning.ActivitiesActivity" />
+        <activity android:name="com.max.app.contextlearning.CurrentState" />
     </application>
 
 </manifest>

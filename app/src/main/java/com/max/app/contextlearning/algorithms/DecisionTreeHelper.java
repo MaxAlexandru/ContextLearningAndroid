@@ -6,6 +6,7 @@ import com.max.app.contextlearning.utilities.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class DecisionTreeHelper {
 
@@ -35,14 +36,8 @@ public class DecisionTreeHelper {
             }
             node = new DecisionTree(bestAttr);
             for (String value : Constants.SENSORS_VALUES.get(bestAttr)) {
-                ArrayList<HashMap<String, String>> newData = new ArrayList<>();
-                if (bestAttr.equals("proximity") || bestAttr.equals("gravity") || bestAttr.equals("acceleration")) {
-                    newData = getAttrValData(data, bestAttr, value);
-                } else if (bestAttr.equals("light") || bestAttr.equals("noise") || bestAttr.equals("device_tmp")) {
-                    int low = Integer.parseInt(value.split(",")[0]);
-                    int high = Integer.parseInt(value.split(",")[1]);
-                    newData = getAttrContValData(data, bestAttr, low, high);
-                }
+                ArrayList<HashMap<String, String>> newData = getAttrValData(data, bestAttr, value);
+
                 if (newData.isEmpty())
                     node.addNode(value, new DecisionTree(getMostCommonClass(data)));
                 else {
@@ -79,33 +74,22 @@ public class DecisionTreeHelper {
     }
 
     /* Gain function */
-    public float gain(ArrayList<HashMap<String, String>> data, String attr) {
+    private float gain(ArrayList<HashMap<String, String>> data, String attr) {
         float e = entropy(data);
         float ev = 0;
         float x = data.size();
 
-        if (attr.equals("proximity") || attr.equals("gravity") || attr.equals("acceleration")) {
-            for (String val : Constants.SENSORS_VALUES.get(attr)) {
-                ArrayList<HashMap<String, String>> newData = getAttrValData(data, attr, val);
-                float newEntropy = entropy(newData);
-                float xv = newData.size();
-                ev += xv / x * newEntropy;
-            }
-        } else if (attr.equals("light") || attr.equals("noise") || attr.equals("device_tmp")) {
-            for (String val : Constants.SENSORS_VALUES.get(attr)) {
-                int low = Integer.parseInt(val.split(",")[0]);
-                int high = Integer.parseInt(val.split(",")[1]);
-                ArrayList<HashMap<String, String>> newData = getAttrContValData(data, attr, low, high);
-                float newEntropy = entropy(newData);
-                float xv = newData.size();
-                ev += xv / x * newEntropy;
-            }
+        for (String val : Constants.SENSORS_VALUES.get(attr)) {
+            ArrayList<HashMap<String, String>> newData = getAttrValData(data, attr, val);
+            float newEntropy = entropy(newData);
+            float xv = newData.size();
+            ev += xv / x * newEntropy;
         }
 
         return e - ev;
     }
 
-    /* Get examples with attributes based on discreet value */
+    /* Get examples with attributes based on value */
     private ArrayList<HashMap<String, String>> getAttrValData(
             ArrayList<HashMap<String, String>> data, String attr, String val) {
         ArrayList<HashMap<String, String>> newData = new ArrayList<>();
@@ -113,20 +97,6 @@ public class DecisionTreeHelper {
         for (HashMap<String, String> s : data)
             if (s.get(attr).equals(val))
                 newData.add(s);
-
-        return newData;
-    }
-
-    /* Get examples with attributes based on continuous value */
-    private ArrayList<HashMap<String, String>> getAttrContValData(
-            ArrayList<HashMap<String, String>> data, String attr, int low, int high) {
-        ArrayList<HashMap<String, String>> newData = new ArrayList<>();
-
-        for (HashMap<String, String> s : data) {
-            float floatVal = Float.parseFloat(s.get(attr));
-            if (floatVal >= low && floatVal < high)
-                newData.add(s);
-        }
 
         return newData;
     }
@@ -209,18 +179,54 @@ public class DecisionTreeHelper {
         return false;
     }
 
-    public static String getClasses(HashMap<String, DecisionTree> trees, ArrayList<String> input) {
-        String res = "";
+    public static ArrayList<HashMap<String, String>> parseData(ArrayList<String> data) {
+        ArrayList<HashMap<String, String>> newData = new ArrayList<>();
 
-        if (input.get(0).equals("None"))
-            return "None";
-
-        for (String s : trees.keySet()) {
-            Log.i("Tree", s);
-            if (isClass(trees.get(s), input))
-                res += s + ", ";
+        System.out.println(data);
+        for (String s : data) {
+            HashMap<String, String> newEntry = new HashMap<>();
+            String [] entries = s.split("=")[0].split(" ");
+            newEntry.put("label", s.split("=")[1]);
+            int i = 0;
+            for (String entry : Constants.SENSORS_VALUES.keySet()) {
+                newEntry.put(entry, entries[i]);
+                i++;
+            }
+            newData.add(newEntry);
         }
-        return res.substring(0, res.length() - 2);
+        return newData;
     }
 
+    public static HashSet<String> getClasses(ArrayList<HashMap<String, String>> data) {
+        HashSet<String> classes = new HashSet<>();
+
+        for (HashMap<String, String> s : data)
+            classes.add(s.get("label"));
+
+        return classes;
+    }
+
+    private static boolean isLabel(HashMap<String, String> input, DecisionTree tree) {
+        while (tree != null) {
+            String attr = tree.attr;
+            String value = input.get(attr);
+            if (tree.children.get(value).attr.equals("Yes"))
+                return true;
+            else if (tree.children.get(value).attr.equals("No"))
+                return false;
+            else
+                tree = tree.children.get(value);
+        }
+        return false;
+    }
+
+    public static ArrayList<String> getLabels(HashMap<String, String> input, HashMap<String, DecisionTree> trees) {
+        ArrayList<String> labels = new ArrayList<>();
+        for (String s : trees.keySet()) {
+            boolean ok = isLabel(input, trees.get(s));
+            if (ok)
+                labels.add(s);
+        }
+        return labels;
+    }
 }

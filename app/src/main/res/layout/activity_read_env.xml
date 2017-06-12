@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:padding="10dp"
     android:orientation="vertical"
-    tools:context="com.example.max.contextlearning.ReadEnvActivity">
+    tools:context="com.max.app.contextlearning.ReadEnvActivity">
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

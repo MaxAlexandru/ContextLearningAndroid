@@ -99,10 +99,6 @@ public class HomeFragment extends ListFragment {
                     data += "LAT: " + String.valueOf(formatter3.format(Float.parseFloat(sp[0]))) + "  ";
                     data += "LONG: " + String.valueOf(formatter3.format(Float.parseFloat(sp[1])));
                     dataSet.set(6, data);
-                } else if (action.equals(Constants.ACTIONS.get("Current"))) {
-                    String value = intent.getStringExtra("CurrentActivity");
-                    TextView current = (TextView) getActivity().findViewById(R.id.home_current_activities);
-                    current.setText(value);
                 }
                 arrayAdapter.notifyDataSetChanged();
             }

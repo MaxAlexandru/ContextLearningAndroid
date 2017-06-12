@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.max.contextlearning.ScenariosAdd">
+    tools:context="com.max.app.contextlearning.ScenariosAdd">
 
     <TextView
         android:padding="5dp"
