@@ -1,18 +1,36 @@
 package com.max.app.contextlearning.fragments;
 
 import android.app.Fragment;
+import android.graphics.Color;
+import android.hardware.Sensor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import com.androidplot.xy.BoundaryMode;
+import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYPlot;
+import com.androidplot.xy.XYSeries;
 import com.max.app.contextlearning.R;
 import com.max.app.contextlearning.algorithms.DecisionTree;
 import com.max.app.contextlearning.algorithms.DecisionTreeHelper;
+import com.max.app.contextlearning.database.DataSetDbHelper;
 import com.max.app.contextlearning.database.TrainingSetDbHelper;
 import com.max.app.contextlearning.utilities.Constants;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -28,53 +46,37 @@ public class ActivitiesFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        TrainingSetDbHelper trainingSet = new TrainingSetDbHelper(getActivity());
-        ArrayList<String> dataSet = trainingSet.getAll();
-        ArrayList<HashMap<String, String>> data = parseData(dataSet);
-        HashSet<String> classes = getClasses(data);
+        final EditText fromEditText = (EditText) getActivity().findViewById(R.id.activities_from_time);
+        final EditText toEditText = (EditText) getActivity().findViewById(R.id.activities_to_time);
+        Button saveBtn = (Button) getActivity().findViewById(R.id.activities_save_btn);
 
-        System.out.println(data);
+        saveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String from = fromEditText.getText().toString();
+                String to = toEditText.getText().toString();
+                DateFormat formatter = new SimpleDateFormat("HH:mm");
+                Date fromDate = null, toDate = null;
+                try {
+                    fromDate = formatter.parse(from);
+                    toDate = formatter.parse(to);
+                } catch (ParseException e) {
+                    Toast toast = Toast.makeText(getActivity(),
+                            "Wrong time format! Use HH:MM format.", Toast.LENGTH_SHORT);
+                }
+                if (fromDate != null && toDate != null) {
+                    Log.i(Constants.TAG, String.valueOf(fromDate.getTime()));
+                    Log.i(Constants.TAG, String.valueOf(toDate.getTime()));
 
-        HashMap<String, DecisionTree> trees = new HashMap<>();
-        for (String c : classes) {
-            ArrayList<String> attributes = new ArrayList<>();
-            attributes.addAll(Constants.SENSORS_VALUES.keySet());
-            DecisionTreeHelper th = new DecisionTreeHelper(c);
-            DecisionTree dt = th.id3(data, attributes);
-            trees.put(c, dt);
-        }
+//                    DataSetDbHelper rawDb = new DataSetDbHelper(getActivity());
+//                    ArrayList<String> rawData = rawDb.getAllRaw();
+//                    for (String s : rawData) {
+//                        Log.i(Constants.TAG, s.split("=")[0]);
+//                    }
+                }
 
-//        DecisionTreeHelper th = new DecisionTreeHelper("Using Bed");
-//        DecisionTree dt = th.id3(data, Constants.SENSORS_VALUES.keySet());
-//        System.out.println(dt.attr);
 
-        for (String c : classes)
-            System.out.println(trees.get(c).attr);
-//        System.out.println(trees.get("Using Outside").children.get("1000,5000").attr);
-    }
-
-    public ArrayList<HashMap<String, String>> parseData(ArrayList<String> data) {
-        ArrayList<HashMap<String, String>> newData = new ArrayList<>();
-
-        for (String s : data) {
-            HashMap<String, String> newEntry = new HashMap<>();
-            String [] tokens = s.split(" \\| ");
-            for (int i = 1; i < tokens.length; i++) {
-                String [] entries = tokens[i].split(" : ");
-                newEntry.put(entries[0], entries[1]);
             }
-            newData.add(newEntry);
-        }
-
-        return newData;
-    }
-
-    public static HashSet<String> getClasses(ArrayList<HashMap<String, String>> data) {
-        HashSet<String> classes = new HashSet<>();
-
-        for (HashMap<String, String> s : data)
-            classes.add(s.get("label"));
-
-        return classes;
+        });
     }
 }
