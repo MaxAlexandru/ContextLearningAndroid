@@ -32,6 +32,15 @@ public class DataSetDbHelper extends SQLiteOpenHelper {
             "DROP TABLE IF EXISTS " +
                     DataSetDbContract.LabeledEntries.TABLE_NAME;
 
+    private static final String SQL_CREATE_ENTRIES_ACTIVITY =
+            "CREATE TABLE " +
+                    DataSetDbContract.ActivityEntries.TABLE_NAME + " (" +
+                    DataSetDbContract.ActivityEntries.COLUMN_NAME_TIME + " INTEGER PRIMARY KEY," +
+                    DataSetDbContract.ActivityEntries.COLUMN_NAME_LABEL + " TEXT)";
+    private static final String SQL_DELETE_ENTRIES_ACTIVITY =
+            "DROP TABLE IF EXISTS " +
+                    DataSetDbContract.ActivityEntries.TABLE_NAME;
+
     public DataSetDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -40,12 +49,14 @@ public class DataSetDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL(SQL_CREATE_ENTRIES_RAW);
         sqLiteDatabase.execSQL(SQL_CREATE_ENTRIES_LABELED);
+        sqLiteDatabase.execSQL(SQL_CREATE_ENTRIES_ACTIVITY);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL(SQL_DELETE_ENTRIES_RAW);
         sqLiteDatabase.execSQL(SQL_DELETE_ENTRIES_LABELED);
+        sqLiteDatabase.execSQL(SQL_DELETE_ENTRIES_ACTIVITY);
         onCreate(sqLiteDatabase);
     }
 
@@ -68,6 +79,17 @@ public class DataSetDbHelper extends SQLiteOpenHelper {
         values.put(DataSetDbContract.LabeledEntries.COLUMN_NAME_LABEL, label);
 
         db.insert(DataSetDbContract.LabeledEntries.TABLE_NAME, null, values);
+        db.close();
+    }
+
+    public void addActivity(long time, String label) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(DataSetDbContract.ActivityEntries.COLUMN_NAME_TIME, time);
+        values.put(DataSetDbContract.ActivityEntries.COLUMN_NAME_LABEL, label);
+
+        db.insert(DataSetDbContract.ActivityEntries.TABLE_NAME, null, values);
         db.close();
     }
 
@@ -107,16 +129,40 @@ public class DataSetDbHelper extends SQLiteOpenHelper {
         return items;
     }
 
+    public ArrayList<String> getAllActivity() {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String[] projection = {
+                DataSetDbContract.ActivityEntries.COLUMN_NAME_TIME,
+                DataSetDbContract.ActivityEntries.COLUMN_NAME_LABEL
+        };
+        Cursor cursor = db.query(DataSetDbContract.ActivityEntries.TABLE_NAME, projection,
+                null, null, null, null, null);
+        ArrayList<String> items = new ArrayList<>();
+        while(cursor.moveToNext())
+            items.add(cursor.getString(0) + "=" + cursor.getString(1));
+        cursor.close();
+        db.close();
+
+        return items;
+    }
+
     public void deleteAllRaw() {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         sqLiteDatabase.execSQL(SQL_DELETE_ENTRIES_RAW);
-        onCreate(sqLiteDatabase);
+        sqLiteDatabase.execSQL(SQL_CREATE_ENTRIES_RAW);
     }
 
     public void deleteAllLabeled() {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         sqLiteDatabase.execSQL(SQL_DELETE_ENTRIES_LABELED);
-        onCreate(sqLiteDatabase);
+        sqLiteDatabase.execSQL(SQL_CREATE_ENTRIES_LABELED);
+    }
+
+    public void deleteAllActivity() {
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        sqLiteDatabase.execSQL(SQL_DELETE_ENTRIES_ACTIVITY);
+        sqLiteDatabase.execSQL(SQL_CREATE_ENTRIES_ACTIVITY);
     }
 
     public ArrayList<String> getAllRawBetween(long from, long to) {
