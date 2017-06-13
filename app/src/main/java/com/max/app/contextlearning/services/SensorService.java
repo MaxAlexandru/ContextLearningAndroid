@@ -1,5 +1,7 @@
 package com.max.app.contextlearning.services;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,15 +16,18 @@ import android.media.MediaRecorder;
 import android.os.BatteryManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.max.app.contextlearning.MainActivity;
 import com.max.app.contextlearning.R;
 import com.max.app.contextlearning.algorithms.DecisionTree;
 import com.max.app.contextlearning.algorithms.DecisionTreeHelper;
 import com.max.app.contextlearning.database.DataSetDbHelper;
 import com.max.app.contextlearning.database.TrainingSetDbHelper;
+import com.max.app.contextlearning.fragments.SettingsFragment;
 import com.max.app.contextlearning.listeners.MySensorListener;
 import com.max.app.contextlearning.utilities.Constants;
 
@@ -293,6 +298,21 @@ public class SensorService extends Service {
                             }
                             labeledDb.addActivity(System.currentTimeMillis(), res);
                             Log.i(Constants.TAG, "[SensorsServiceRunnable]: " + res);
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                                    (int)System.currentTimeMillis(), intent, 0);
+                            NotificationCompat.Builder mBuilder =
+                                    new NotificationCompat.Builder(getApplicationContext())
+                                            .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                                            .setContentTitle("Your current activity is")
+                                            .setContentText(res)
+                                            .setOngoing(true)
+                                            .addAction(R.drawable.ic_settings_applications_black_24dp,
+                                                    "Change", pendingIntent);
+                            NotificationManager mNotificationManager =
+                                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                            int mId = 1;
+                            mNotificationManager.notify(mId, mBuilder.build());
                         }
                     }
                 }

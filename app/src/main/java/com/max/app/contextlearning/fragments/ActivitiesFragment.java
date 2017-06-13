@@ -154,10 +154,6 @@ public class ActivitiesFragment extends Fragment {
                         res += s + " ";
                     currentActivity.setText(res);
                 }
-//                for (String c : classes) {
-//                    System.out.println(c);
-//                    DecisionTreeHelper.displayTree(trees.get(c));
-//                }
             }
         });
 

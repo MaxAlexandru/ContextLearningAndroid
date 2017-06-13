@@ -3,6 +3,7 @@ package com.max.app.contextlearning;
 import android.Manifest;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -66,18 +68,22 @@ public class MainActivity extends AppCompatActivity {
         Log.i(Constants.TAG, "[MainActivity]: Settings = " + settings);
         if (settings.isEmpty()) {
             SharedPreferences.Editor editor = sharedPref.edit();
-//            editor.putString("Notifications", "Off");
-//            editor.putString("AutoVolume", "Off");
             editor.putString("SensorsService", "Off");
-            editor.putString("Beautify", "On");
             editor.apply();
-
-//            final PackageManager pm  = this.getPackageManager();
-//            final ComponentName volReceiver = new ComponentName(this, VolumeReceiver.class);
-//
-//            pm.setComponentEnabledSetting(volReceiver,
-//                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-//                    PackageManager.DONT_KILL_APP);
+        } else {
+            String sensorsService = sharedPref.getString("SensorsService", null);
+            if (sensorsService != null && sensorsService.equals("On")) {
+                NotificationCompat.Builder mBuilder =
+                        new NotificationCompat.Builder(this)
+                                .setSmallIcon(R.drawable.ic_notifications_black_24dp)
+                                .setContentTitle("Your current activity is")
+                                .setContentText("Hello World!")
+                                .setOngoing(true);
+                NotificationManager mNotificationManager =
+                        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                int mId = 1;
+                mNotificationManager.notify(mId, mBuilder.build());
+            }
         }
 
         navBar = (BottomNavigationView) findViewById(R.id.navigation_bar);

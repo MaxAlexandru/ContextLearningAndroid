@@ -44,7 +44,6 @@
         <activity android:name="com.max.app.contextlearning.DisplayBroadcast" />
         <activity android:name="com.max.app.contextlearning.ScenariosAdd" />
         <activity android:name="com.max.app.contextlearning.ActivitiesActivity" />
-        <activity android:name="com.max.app.contextlearning.CurrentState" />
     </application>
 
 </manifest>

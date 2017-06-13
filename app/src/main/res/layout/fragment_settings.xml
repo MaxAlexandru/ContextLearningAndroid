@@ -22,30 +22,4 @@
             android:layout_weight="1"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_margin="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="18sp"
-            android:textColor="#000"
-            android:text="@string/settings_beautify_state"/>
-        <Switch
-            android:id="@+id/settings_beautify_state_switch"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-    </LinearLayout>
-    
-    <Button
-        android:id="@+id/settings_clear_db_button"
-        android:text="Delete database"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"/>
-
 </LinearLayout>

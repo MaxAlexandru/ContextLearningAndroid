@@ -209,4 +209,26 @@ public class DataSetDbHelper extends SQLiteOpenHelper {
         return item;
     }
 
+    public String getLastActivity() {
+        SQLiteDatabase db = getReadableDatabase();
+
+        String[] projection = {
+                DataSetDbContract.ActivityEntries.COLUMN_NAME_TIME,
+                DataSetDbContract.ActivityEntries.COLUMN_NAME_LABEL
+        };
+
+        String sortOrder = DataSetDbContract.RawEntries.COLUMN_NAME_TIME + " DESC";
+
+        Cursor cursor = db.query(DataSetDbContract.ActivityEntries.TABLE_NAME, projection,
+                null, null, null, null, sortOrder);
+        String item = "";
+        cursor.moveToNext();
+        if (!cursor.isAfterLast())
+            item += cursor.getString(1);
+        cursor.close();
+        db.close();
+
+        return item;
+    }
+
 }

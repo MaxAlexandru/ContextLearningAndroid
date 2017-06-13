@@ -13,9 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.max.app.contextlearning.algorithms.DecisionTreeHelper;
+import com.max.app.contextlearning.database.DataSetDbHelper;
 import com.max.app.contextlearning.utilities.Constants;
 import com.max.app.contextlearning.database.TrainingSetDbHelper;
 import com.max.app.contextlearning.adapters.HomeItemsAdapter;
@@ -24,6 +27,8 @@ import com.max.app.contextlearning.R;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 public class HomeFragment extends ListFragment {
@@ -111,32 +116,39 @@ public class HomeFragment extends ListFragment {
         intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
         getActivity().registerReceiver(br, intentFilter);
 
-        /* Add current sensor data to database as training set. */
-        final EditText name = (EditText) getActivity().findViewById(R.id.home_name);
-        Button save = (Button) getActivity().findViewById(R.id.home_save);
-        save.setOnClickListener(new View.OnClickListener() {
+        final Spinner currentSpinner = (Spinner) getActivity().findViewById(R.id.home_activity_spinner);
+        ArrayList<String> spinnerClasses = new ArrayList<>();
+        final DataSetDbHelper labeledDb = new DataSetDbHelper(getActivity());
+        ArrayList<String> allDataSet = labeledDb.getAllLabeled();
+        ArrayList<HashMap<String, String>> data = DecisionTreeHelper.parseData(allDataSet);
+        HashSet<String> classes = DecisionTreeHelper.getClasses(data);
+        String lastActivity = labeledDb.getLastActivity();
+        TextView currentActivity = (TextView) getActivity().findViewById(R.id.home_current_activity);
+        currentActivity.setText(lastActivity);
+        for (String s : classes)
+            spinnerClasses.add(s);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_item, spinnerClasses);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        currentSpinner.setAdapter(adapter);
+        Button changeBtn = (Button) getActivity().findViewById(R.id.home_change_btn);
+        changeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final TrainingSetDbHelper trainingSet = new TrainingSetDbHelper(getActivity());
-                final Toast failToast = Toast.makeText(getActivity(),
-                        "No label error!", Toast.LENGTH_SHORT);
-                final Toast okToast = Toast.makeText(getActivity(),
-                        "Entry added!", Toast.LENGTH_SHORT);
-
-                ArrayList<String> newEntry = new ArrayList<>();
-
-                if (name.getText().toString().trim().length() == 0)
-                    failToast.show();
-                else {
-                    newEntry.add(name.getText().toString());
-                    for (int i = 0; i < dataSet.size(); i++)
-                        if (i == 1 || i == 3 || i == 4)
-                            newEntry.add(Constants.beautify(i, dataSet.get(i)));
-                        else
-                            newEntry.add(dataSet.get(i));
-                    trainingSet.add(newEntry);
-                    okToast.show();
-                }
+                String label = currentSpinner.getSelectedItem().toString();
+                String lastRaw = labeledDb.getLastRaw();
+                String rawValue = lastRaw.split("=")[1];
+                String [] values = rawValue.split(" ");
+                String newValues = "";
+                newValues += Constants.beautify(0, values[0]) + " ";
+                newValues += values[1] + " ";
+                newValues += Constants.beautify(2, values[2]) + " ";
+                newValues += values[3] + " ";
+                newValues += values[4] + " ";
+                newValues += Constants.beautify(5, values[5]);
+                labeledDb.addLabeled(newValues, label);
+                Toast toast = Toast.makeText(getActivity(), "Preference saved", Toast.LENGTH_SHORT);
+                toast.show();
             }
         });
     }
