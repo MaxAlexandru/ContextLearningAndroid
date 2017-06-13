@@ -128,57 +128,6 @@ public class DecisionTreeHelper {
         return "No";
     }
 
-    private static boolean isClass(DecisionTree tree, ArrayList<String> input) {
-        while (!tree.attr.equals("Yes") && !tree.attr.equals("No")) {
-            if (tree.attr.equals("proximity")) {
-                tree = tree.children.get(Constants.beautify(1, input.get(1)));
-            } else if (tree.attr.equals("gravity")) {
-                tree = tree.children.get(Constants.beautify(3, input.get(3)));
-            } else if (tree.attr.equals("acceleration")) {
-                tree = tree.children.get(Constants.beautify(4, input.get(4)));
-            } else if (tree.attr.equals("light")) {
-                String value = "";
-                for (String val : Constants.SENSORS_VALUES.get("light")) {
-                    int low = Integer.parseInt(val.split(",")[0]);
-                    int high = Integer.parseInt(val.split(",")[1]);
-                    float current = Float.parseFloat(input.get(0));
-                    if (low <= current && current < high) {
-                        value = String.valueOf(low) + "," + String.valueOf(high);
-                        break;
-                    }
-                }
-                tree = tree.children.get(value);
-            } else if (tree.attr.equals("noise")) {
-                String value = "";
-                for (String val : Constants.SENSORS_VALUES.get("noise")) {
-                    int low = Integer.parseInt(val.split(",")[0]);
-                    int high = Integer.parseInt(val.split(",")[1]);
-                    float current = Float.parseFloat(input.get(2));
-                    if (low <= current && current < high) {
-                        value = String.valueOf(low) + "," + String.valueOf(high);
-                        break;
-                    }
-                }
-                tree = tree.children.get(value);
-            } else if (tree.attr.equals("device_tmp")) {
-                String value = "";
-                for (String val : Constants.SENSORS_VALUES.get("device_tmp")) {
-                    int low = Integer.parseInt(val.split(",")[0]);
-                    int high = Integer.parseInt(val.split(",")[1]);
-                    float current = Float.parseFloat(input.get(5));
-                    if (low <= current && current < high) {
-                        value = String.valueOf(low) + "," + String.valueOf(high);
-                        break;
-                    }
-                }
-                tree = tree.children.get(value);
-            }
-        }
-        if (tree.attr.equals("Yes"))
-            return true;
-        return false;
-    }
-
     public static ArrayList<HashMap<String, String>> parseData(ArrayList<String> data) {
         ArrayList<HashMap<String, String>> newData = new ArrayList<>();
 
@@ -228,5 +177,15 @@ public class DecisionTreeHelper {
                 labels.add(s);
         }
         return labels;
+    }
+
+    public static String displayTree(DecisionTree tree) {
+        String res = "";
+        for (String s : tree.children.keySet()) {
+            res += tree.attr + " = " + s + " => " + tree.children.get(s).attr + "\n";
+            if (!tree.children.get(s).attr.equals("Yes") && !tree.children.get(s).attr.equals("No"))
+                res += displayTree(tree.children.get(s));
+        }
+        return res;
     }
 }

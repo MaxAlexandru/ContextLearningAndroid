@@ -8,8 +8,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,10 +50,33 @@ public class ActivitiesFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        final DataSetDbHelper labeledDb = new DataSetDbHelper(getActivity());
+        ArrayList<String> allDataSet = labeledDb.getAllLabeled();
+        ArrayList<HashMap<String, String>> data = DecisionTreeHelper.parseData(allDataSet);
+        HashSet<String> classes = DecisionTreeHelper.getClasses(data);
+        final HashMap<String, DecisionTree> trees = new HashMap<>();
+        for (String c : classes) {
+            ArrayList<String> attributes = new ArrayList<>();
+            attributes.addAll(Constants.SENSORS_VALUES.keySet());
+            DecisionTreeHelper th = new DecisionTreeHelper(c);
+            DecisionTree dt = th.id3(data, attributes);
+            trees.put(c, dt);
+        }
+
+        ArrayList<String> spinnerClasses = new ArrayList<>();
+        for (String s : classes)
+            spinnerClasses.add(s);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_item, spinnerClasses);
+        final Spinner classesSpinner = (Spinner) getActivity().findViewById(R.id.activities_classes_spinner);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        classesSpinner.setAdapter(adapter);
+
         final EditText fromEditText = (EditText) getActivity().findViewById(R.id.activities_from_time);
         final EditText toEditText = (EditText) getActivity().findViewById(R.id.activities_to_time);
         final Button saveBtn = (Button) getActivity().findViewById(R.id.activities_save_btn);
         final Button testBtn = (Button) getActivity().findViewById(R.id.activities_test_btn);
+        final Button viewBtn = (Button) getActivity().findViewById(R.id.activities_view_tree_btn);
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +91,7 @@ public class ActivitiesFragment extends Fragment {
                 } catch (ParseException e) {
                     Toast toast = Toast.makeText(getActivity(),
                             "Wrong time format! Use HH:MM format.", Toast.LENGTH_SHORT);
+                    toast.show();
                 }
                 if (fromDate != null && toDate != null) {
                     long fromNum = fromDate.getTime();
@@ -107,20 +133,6 @@ public class ActivitiesFragment extends Fragment {
         testBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DataSetDbHelper labeledDb = new DataSetDbHelper(getActivity());
-                ArrayList<String> allDataSet = labeledDb.getAllLabeled();
-                ArrayList<HashMap<String, String>> data = DecisionTreeHelper.parseData(allDataSet);
-                HashSet<String> classes = DecisionTreeHelper.getClasses(data);
-
-                HashMap<String, DecisionTree> trees = new HashMap<>();
-                for (String c : classes) {
-                    ArrayList<String> attributes = new ArrayList<>();
-                    attributes.addAll(Constants.SENSORS_VALUES.keySet());
-                    DecisionTreeHelper th = new DecisionTreeHelper(c);
-                    DecisionTree dt = th.id3(data, attributes);
-                    trees.put(c, dt);
-                }
-
                 String rawValue = labeledDb.getLastRaw().split("=")[1];
                 String [] values = rawValue.split(" ");
                 HashMap<String, String> newVlaue = new HashMap<>();
@@ -142,7 +154,20 @@ public class ActivitiesFragment extends Fragment {
                         res += s + " ";
                     currentActivity.setText(res);
                 }
+//                for (String c : classes) {
+//                    System.out.println(c);
+//                    DecisionTreeHelper.displayTree(trees.get(c));
+//                }
             }
         });
+
+        viewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TextView treeView = (TextView) getActivity().findViewById(R.id.activities_tree_view);
+                treeView.setText(DecisionTreeHelper.displayTree(trees.get(classesSpinner.getSelectedItem().toString())));
+            }
+        });
+
     }
 }
