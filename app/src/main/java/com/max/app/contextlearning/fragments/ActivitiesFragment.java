@@ -59,7 +59,7 @@ public class ActivitiesFragment extends Fragment {
             ArrayList<String> attributes = new ArrayList<>();
             attributes.addAll(Constants.SENSORS_VALUES.keySet());
             DecisionTreeHelper th = new DecisionTreeHelper(c);
-            DecisionTree dt = th.id3(data, attributes);
+            DecisionTree dt = th.id3(data, attributes, null, null);
             trees.put(c, dt);
         }
 

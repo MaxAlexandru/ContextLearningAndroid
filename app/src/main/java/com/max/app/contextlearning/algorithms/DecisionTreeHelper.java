@@ -1,7 +1,5 @@
 package com.max.app.contextlearning.algorithms;
 
-import android.util.Log;
-
 import com.max.app.contextlearning.utilities.Constants;
 
 import java.util.ArrayList;
@@ -16,14 +14,19 @@ public class DecisionTreeHelper {
         this.label = label;
     }
 
-    public DecisionTree id3(ArrayList<HashMap<String, String>> data, ArrayList<String> attributes) {
+    public DecisionTree id3(ArrayList<HashMap<String, String>> data, ArrayList<String> attributes, String targetAttr, String targetValue) {
         DecisionTree node;
         if (allYes(data)) {
             node = new DecisionTree("Yes");
         } else if (allNo(data)) {
             node = new DecisionTree("No");
         } else if (attributes.isEmpty()) {
-            node = new DecisionTree(getMostCommonClass(data));
+            node = new DecisionTree("No");
+            for (HashMap<String, String> d : data)
+                if (d.get("label").equals(label)) {
+                    node = new DecisionTree("Yes");
+                    break;
+                }
         } else {
             String bestAttr = "";
             float bestGain = -9999;
@@ -42,7 +45,7 @@ public class DecisionTreeHelper {
                     node.addNode(value, new DecisionTree(getMostCommonClass(data)));
                 else {
                     attributes.remove(bestAttr);
-                    node.addNode(value, id3(newData, attributes));
+                    node.addNode(value, id3(newData, attributes, bestAttr, value));
                 }
             }
         }

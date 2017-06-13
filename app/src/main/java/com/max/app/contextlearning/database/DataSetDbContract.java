@@ -18,4 +18,10 @@ public class DataSetDbContract {
         public static final String COLUMN_NAME_LABEL = "Label";
     }
 
+    public static class ActivityEntries implements BaseColumns {
+        public static final String TABLE_NAME = "ActivityDataSet";
+        public static final String COLUMN_NAME_TIME = "Time";
+        public static final String COLUMN_NAME_LABEL = "Label";
+    }
+
 }

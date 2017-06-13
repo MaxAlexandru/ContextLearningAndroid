@@ -57,7 +57,6 @@ public class RawDatabaseFragment extends ListFragment {
                 rawDb.deleteAllRaw();
                 Toast done = Toast.makeText(getActivity(), "Raw DataSet deleted!", Toast.LENGTH_SHORT);
                 done.show();
-                dataAdapter.notifyDataSetChanged();
             }
         });
     }

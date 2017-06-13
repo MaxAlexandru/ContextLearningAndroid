@@ -15,6 +15,7 @@ import android.os.BatteryManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.max.app.contextlearning.R;
@@ -48,7 +49,7 @@ public class SensorService extends Service {
     public int buffSize;
     public SharedPreferences sharedPref;
     private final int SAMPLE_RATE = 44100;
-    private Runnable r, r2;
+    private Runnable r1, r2, r3;
     public BroadcastReceiver br;
 
     public SensorService() {
@@ -69,8 +70,8 @@ public class SensorService extends Service {
                 getString(R.string.settings_filename),
                 Context.MODE_PRIVATE);
 
-        if (r == null) {
-            r = new Runnable(){
+        if (r1 == null) {
+            r1 = new Runnable(){
                 private String sensorsServiceStatus;
                 private int prevSensorsStatus;
 
@@ -123,7 +124,7 @@ public class SensorService extends Service {
                     }
                 }
             };
-            Thread thread = new Thread(r);
+            Thread thread = new Thread(r1);
             thread.start();
         }
 
@@ -224,6 +225,79 @@ public class SensorService extends Service {
                 }
             };
             Thread thread = new Thread(r2);
+            thread.start();
+        }
+
+        if (r3 == null) {
+            r3 = new Runnable() {
+                @Override
+                public void run() {
+                    final DataSetDbHelper labeledDb = new DataSetDbHelper(getApplicationContext());
+                    ArrayList<String> allDataSet = labeledDb.getAllLabeled();
+                    ArrayList<HashMap<String, String>> data = DecisionTreeHelper.parseData(allDataSet);
+                    HashSet<String> classes = DecisionTreeHelper.getClasses(data);
+                    HashMap<String, DecisionTree> trees = new HashMap<>();
+                    for (String c : classes) {
+                        ArrayList<String> attributes = new ArrayList<>();
+                        attributes.addAll(Constants.SENSORS_VALUES.keySet());
+                        DecisionTreeHelper th = new DecisionTreeHelper(c);
+                        DecisionTree dt = th.id3(data, attributes, null, null);
+                        trees.put(c, dt);
+                    }
+                    int prevSize = allDataSet.size();
+
+                    while (true) {
+                        try {
+                            Thread.sleep(Constants.DETECT_TIME);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        String res = "None";
+                        String sensorsServiceStatus = sharedPref.getString("SensorsService", null);
+                        if (sensorsServiceStatus != null && sensorsServiceStatus.equals("On")) {
+                            ArrayList<String> currentAllDataSet = labeledDb.getAllLabeled();
+                            int currentSize = currentAllDataSet.size();
+                            if (currentSize > 0) {
+                                if (prevSize != currentSize) {
+                                    prevSize = currentSize;
+                                    data = DecisionTreeHelper.parseData(currentAllDataSet);
+                                    classes = DecisionTreeHelper.getClasses(data);
+                                    trees = new HashMap<>();
+                                    for (String c : classes) {
+                                        ArrayList<String> attributes = new ArrayList<>();
+                                        attributes.addAll(Constants.SENSORS_VALUES.keySet());
+                                        DecisionTreeHelper th = new DecisionTreeHelper(c);
+                                        DecisionTree dt = th.id3(data, attributes, null, null);
+                                        trees.put(c, dt);
+                                    }
+                                }
+
+                                String rawValue = labeledDb.getLastRaw();
+                                if (!rawValue.equals("")) {
+                                    String[] values = rawValue.split("=")[1].split(" ");
+                                    HashMap<String, String> newValue = new HashMap<>();
+                                    newValue.put("light", Constants.beautify(0, values[0]));
+                                    newValue.put("proximity", values[1]);
+                                    newValue.put("noise", Constants.beautify(2, values[2]));
+                                    newValue.put("gravity", values[3]);
+                                    newValue.put("acceleration", values[4]);
+                                    newValue.put("device_tmp", Constants.beautify(5, values[5]));
+
+                                    ArrayList<String> labels = DecisionTreeHelper.getLabels(newValue, trees);
+                                    if (!labels.isEmpty()) {
+                                        res = "";
+                                        for (String s : labels)
+                                            res += s + " ";
+                                    }
+                                }
+                            }
+                            labeledDb.addActivity(System.currentTimeMillis(), res);
+                            Log.i(Constants.TAG, "[SensorsServiceRunnable]: " + res);
+                        }
+                    }
+                }
+            };
+            Thread thread = new Thread(r3);
             thread.start();
         }
 

@@ -1,7 +1,5 @@
 package com.max.app.contextlearning.utilities;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -9,6 +7,7 @@ public class Constants {
 
     public static final String TAG = "max.app.learning";
     public static final int READ_TIME = 30000;
+    public static final int DETECT_TIME = 60000;
 
     public static final String [] SENSORS = {
             "Light",

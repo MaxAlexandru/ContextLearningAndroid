@@ -60,6 +60,18 @@ public class DatabaseFragment extends Fragment {
                 fragmentTransaction.commit();
             }
         });
+
+        TextView activityDb = (TextView) getActivity().findViewById(R.id.database_to_activity_db);
+        activityDb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                ActivityDatabaseFragment activityDbFragment = new ActivityDatabaseFragment();
+                fragmentTransaction.replace(R.id.main_fragment, activityDbFragment);
+                fragmentTransaction.commit();
+            }
+        });
     }
 
 }
