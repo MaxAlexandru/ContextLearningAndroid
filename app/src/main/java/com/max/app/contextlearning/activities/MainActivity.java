@@ -1,4 +1,4 @@
-package com.max.app.contextlearning;
+package com.max.app.contextlearning.activities;
 
 import android.Manifest;
 import android.app.FragmentManager;
@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.max.app.contextlearning.R;
 import com.max.app.contextlearning.fragments.ActivitiesFragment;
 import com.max.app.contextlearning.fragments.DatabaseFragment;
 import com.max.app.contextlearning.fragments.HomeFragment;

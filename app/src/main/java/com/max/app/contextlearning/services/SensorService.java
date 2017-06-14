@@ -18,16 +18,12 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.TextView;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.max.app.contextlearning.MainActivity;
+import com.max.app.contextlearning.activities.MainActivity;
 import com.max.app.contextlearning.R;
 import com.max.app.contextlearning.algorithms.DecisionTree;
 import com.max.app.contextlearning.algorithms.DecisionTreeHelper;
 import com.max.app.contextlearning.database.DataSetDbHelper;
-import com.max.app.contextlearning.database.TrainingSetDbHelper;
-import com.max.app.contextlearning.fragments.SettingsFragment;
 import com.max.app.contextlearning.listeners.MySensorListener;
 import com.max.app.contextlearning.utilities.Constants;
 

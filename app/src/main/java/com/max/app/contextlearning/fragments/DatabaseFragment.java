@@ -3,26 +3,13 @@ package com.max.app.contextlearning.fragments;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ListFragment;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.max.app.contextlearning.R;
-import com.max.app.contextlearning.database.DataSetDbHelper;
-import com.max.app.contextlearning.database.TrainingSetDbHelper;
-import com.max.app.contextlearning.adapters.DatabaseItemsAdapter;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
 
 public class DatabaseFragment extends Fragment {
 

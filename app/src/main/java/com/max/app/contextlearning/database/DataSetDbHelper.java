@@ -100,8 +100,11 @@ public class DataSetDbHelper extends SQLiteOpenHelper {
                 DataSetDbContract.RawEntries.COLUMN_NAME_TIME,
                 DataSetDbContract.RawEntries.COLUMN_NAME_SENSORS
         };
+
+        String sortOrder = DataSetDbContract.RawEntries.COLUMN_NAME_TIME + " DESC";
+
         Cursor cursor = db.query(DataSetDbContract.RawEntries.TABLE_NAME, projection,
-                null, null, null, null, null);
+                null, null, null, null, sortOrder);
         ArrayList<String> items = new ArrayList<>();
         while(cursor.moveToNext())
             items.add(cursor.getString(0) + "=" + cursor.getString(1));
@@ -136,8 +139,11 @@ public class DataSetDbHelper extends SQLiteOpenHelper {
                 DataSetDbContract.ActivityEntries.COLUMN_NAME_TIME,
                 DataSetDbContract.ActivityEntries.COLUMN_NAME_LABEL
         };
+
+        String sortOrder = DataSetDbContract.ActivityEntries.COLUMN_NAME_TIME + " DESC";
+
         Cursor cursor = db.query(DataSetDbContract.ActivityEntries.TABLE_NAME, projection,
-                null, null, null, null, null);
+                null, null, null, null, sortOrder);
         ArrayList<String> items = new ArrayList<>();
         while(cursor.moveToNext())
             items.add(cursor.getString(0) + "=" + cursor.getString(1));
@@ -217,7 +223,7 @@ public class DataSetDbHelper extends SQLiteOpenHelper {
                 DataSetDbContract.ActivityEntries.COLUMN_NAME_LABEL
         };
 
-        String sortOrder = DataSetDbContract.RawEntries.COLUMN_NAME_TIME + " DESC";
+        String sortOrder = DataSetDbContract.ActivityEntries.COLUMN_NAME_TIME + " DESC";
 
         Cursor cursor = db.query(DataSetDbContract.ActivityEntries.TABLE_NAME, projection,
                 null, null, null, null, sortOrder);

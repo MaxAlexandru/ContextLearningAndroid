@@ -45,46 +45,13 @@ public class VolumeReceiver extends BroadcastReceiver {
                     prev_prev_state = prev_state;
                     prev_state=state;
                     //Answered Call which is ended
-                    addNotification();
                 }
                 if((prev_state == TelephonyManager.CALL_STATE_RINGING)){
                     prev_prev_state = prev_state;
                     prev_state=state;
                     //Rejected or Missed call
-                    addNotification();
                 }
                 break;
         }
-    }
-
-    private void addNotification() {
-        /* Perfect Intent */
-        Intent intent1 = new Intent(mContext, SaveReceiverPerfect.class);
-        PendingIntent pendingIntent1 = PendingIntent.getBroadcast(mContext, 0, intent1,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        /* Too Quiet Intent */
-        Intent intent2 = new Intent(mContext, SaveReceiverTooQuiet.class);
-        PendingIntent pendingIntent2 = PendingIntent.getBroadcast(mContext, 0, intent2,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        /* Too Loud Intent */
-        Intent intent3 = new Intent(mContext, SaveReceiverTooLoud.class);
-        PendingIntent pendingIntent3 = PendingIntent.getBroadcast(mContext, 0, intent3,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        /* https://creativecommons.org/licenses/by/3.0/ */
-        NotificationCompat.Builder notif = new NotificationCompat.Builder(mContext);
-        notif.setAutoCancel(true);
-        notif.setSmallIcon(R.drawable.notification);
-        notif.setContentTitle("Volume level");
-        notif.setContentText("How was the volume level of your last call?");
-        notif.addAction(0, "Perfect", pendingIntent1);
-        notif.addAction(0, "Too Quiet", pendingIntent2);
-        notif.addAction(0, "Too Loud", pendingIntent3);
-
-        // Add as notification
-        NotificationManager manager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(1, notif.build());
     }
 }

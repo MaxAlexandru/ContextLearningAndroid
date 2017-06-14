@@ -1,8 +1,6 @@
 package com.max.app.contextlearning.fragments;
 
 import android.app.Fragment;
-import android.graphics.Color;
-import android.hardware.Sensor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,28 +13,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidplot.xy.BoundaryMode;
-import com.androidplot.xy.LineAndPointFormatter;
-import com.androidplot.xy.SimpleXYSeries;
-import com.androidplot.xy.XYPlot;
-import com.androidplot.xy.XYSeries;
 import com.max.app.contextlearning.R;
 import com.max.app.contextlearning.algorithms.DecisionTree;
 import com.max.app.contextlearning.algorithms.DecisionTreeHelper;
 import com.max.app.contextlearning.database.DataSetDbHelper;
-import com.max.app.contextlearning.database.TrainingSetDbHelper;
 import com.max.app.contextlearning.utilities.Constants;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.StringTokenizer;
 
 public class ActivitiesFragment extends Fragment {
     @Override

@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +19,6 @@ import android.widget.Toast;
 import com.max.app.contextlearning.algorithms.DecisionTreeHelper;
 import com.max.app.contextlearning.database.DataSetDbHelper;
 import com.max.app.contextlearning.utilities.Constants;
-import com.max.app.contextlearning.database.TrainingSetDbHelper;
 import com.max.app.contextlearning.adapters.HomeItemsAdapter;
 import com.max.app.contextlearning.R;
 
