@@ -161,6 +161,10 @@ public class DecisionTreeHelper {
     private static boolean isLabel(HashMap<String, String> input, DecisionTree tree) {
         while (tree != null) {
             String attr = tree.attr;
+            if (attr.equals("Yes"))
+                return true;
+            else if (attr.equals("No"))
+                return false;
             String value = input.get(attr);
             if (tree.children.get(value).attr.equals("Yes"))
                 return true;

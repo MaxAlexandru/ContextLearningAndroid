@@ -70,20 +70,6 @@
         android:layout_gravity="center_horizontal"
         android:text="SAVE"/>
 
-    <TextView
-        android:id="@+id/activities_current_activity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="None"/>
-
-    <Button
-        android:id="@+id/activities_test_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="TEST"/>
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"

@@ -59,4 +59,19 @@ public class ActivityDatabaseFragment extends ListFragment {
             }
         });
     }
+
+    public ArrayList<String> aggregateData(ArrayList<String> data) {
+        ArrayList<String> newData = new ArrayList<>();
+//        String from = data.get(0).split("=")[0];
+//        String to = data.get(0).split("=")[0];
+        String prevLabel = data.get(0).split("=")[1];
+        newData.add(data.get(0));
+        for (int i = 1; i < data.size(); i++) {
+            String currentLabel = data.get(i).split("=")[1];
+            if (!prevLabel.equals(currentLabel))
+                newData.add(data.get(i));
+            prevLabel = data.get(i).split("=")[1];
+        }
+        return newData;
+    }
 }

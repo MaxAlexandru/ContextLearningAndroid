@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.media.AudioFormat;
+import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.BatteryManager;
@@ -246,7 +247,6 @@ public class SensorService extends Service {
                         trees.put(c, dt);
                     }
                     int prevSize = allDataSet.size();
-
                     while (true) {
                         try {
                             Thread.sleep(Constants.DETECT_TIME);
@@ -309,6 +309,15 @@ public class SensorService extends Service {
                                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                             int mId = 1;
                             mNotificationManager.notify(mId, mBuilder.build());
+
+                            final SharedPreferences volSharedPref = getSharedPreferences(
+                                    getString(R.string.volume_filename), Context.MODE_PRIVATE);
+                            if (volSharedPref.getString(res.split(" ")[0], null) != null) {
+                                int volLevel = Integer.parseInt(volSharedPref.getString(res.split(" ")[0], null));
+                                AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+                                audioManager.setStreamVolume(AudioManager.STREAM_RING, volLevel, 0);
+                                Log.i(Constants.TAG, "[SensorsServiceRunnable]: Volume " + volLevel);
+                            }
                         }
                     }
                 }

@@ -64,7 +64,6 @@ public class ActivitiesFragment extends Fragment {
         final EditText fromEditText = (EditText) getActivity().findViewById(R.id.activities_from_time);
         final EditText toEditText = (EditText) getActivity().findViewById(R.id.activities_to_time);
         final Button saveBtn = (Button) getActivity().findViewById(R.id.activities_save_btn);
-        final Button testBtn = (Button) getActivity().findViewById(R.id.activities_test_btn);
         final Button viewBtn = (Button) getActivity().findViewById(R.id.activities_view_tree_btn);
 
         saveBtn.setOnClickListener(new View.OnClickListener() {
@@ -115,33 +114,6 @@ public class ActivitiesFragment extends Fragment {
                         Toast toast = Toast.makeText(getActivity(), "Preference saved", Toast.LENGTH_SHORT);
                         toast.show();
                     }
-                }
-            }
-        });
-
-        testBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String rawValue = labeledDb.getLastRaw().split("=")[1];
-                String [] values = rawValue.split(" ");
-                HashMap<String, String> newVlaue = new HashMap<>();
-                newVlaue.put("light", Constants.beautify(0, values[0]));
-                newVlaue.put("proximity", values[1]);
-                newVlaue.put("noise", Constants.beautify(2, values[2]));
-                newVlaue.put("gravity", values[3]);
-                newVlaue.put("acceleration", values[4]);
-                newVlaue.put("device_tmp", Constants.beautify(5, values[5]));
-
-                ArrayList<String> labels = DecisionTreeHelper.getLabels(newVlaue, trees);
-
-                TextView currentActivity = (TextView) getActivity().findViewById(R.id.activities_current_activity);
-                if (labels.isEmpty())
-                    currentActivity.setText("None");
-                else {
-                    String res = "";
-                    for (String s : labels)
-                        res += s + " ";
-                    currentActivity.setText(res);
                 }
             }
         });

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Context Learning</string>
     <string name="settings_filename">ContextLearningSettings</string>
+    <string name="volume_filename">ContextLearningVolume</string>
     <string name="scenario_file">Scenarios</string>
     <string name="raw_data_file">RawData</string>
 

@@ -10,11 +10,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.Toast;
 
+import com.max.app.contextlearning.algorithms.DecisionTreeHelper;
+import com.max.app.contextlearning.database.DataSetDbHelper;
 import com.max.app.contextlearning.utilities.Constants;
 import com.max.app.contextlearning.R;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 public class SettingsFragment extends Fragment {
 
@@ -65,6 +78,79 @@ public class SettingsFragment extends Fragment {
                     mNotificationManager.notify(mId, mBuilder.build());
                 }
                 editor.apply();
+            }
+        });
+
+
+        final DataSetDbHelper labeledDb = new DataSetDbHelper(getActivity());
+        ArrayList<String> allDataSet = labeledDb.getAllLabeled();
+        ArrayList<HashMap<String, String>> data = DecisionTreeHelper.parseData(allDataSet);
+        HashSet<String> classes = DecisionTreeHelper.getClasses(data);
+        ArrayList<String> spinnerClasses = new ArrayList<>();
+        for (String s : classes)
+            spinnerClasses.add(s);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_item, spinnerClasses);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        final Spinner spinner = (Spinner) getActivity().findViewById(R.id.settings_spinner);
+        spinner.setAdapter(adapter);
+
+        final SeekBar seekbar = (SeekBar) getActivity().findViewById(R.id.settings_seekbar);
+
+        final SharedPreferences volSharedPref = getActivity().getSharedPreferences(
+                getString(R.string.volume_filename), Context.MODE_PRIVATE);
+        final SharedPreferences.Editor volEditor = volSharedPref.edit();
+
+        Map<String, ?> volValues = volSharedPref.getAll();
+        final ArrayList<String> volAdapterData = new ArrayList<>();
+        System.out.println(volValues);
+        for (String s : volValues.keySet())
+            volAdapterData.add(s + " volume level is " + volValues.get(s));
+        final ListView listView = (ListView) getActivity().findViewById(R.id.settings_list_view);
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_list_item_1, volAdapterData);
+        listView.setAdapter(arrayAdapter);
+
+        Button button = (Button) getActivity().findViewById(R.id.settings_save_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int level = seekbar.getProgress();
+                String activity = (String)spinner.getSelectedItem();
+                volEditor.putString(activity, String.valueOf(level));
+                volEditor.apply();
+                Toast toast = Toast.makeText(getActivity(), "Preference saved", Toast.LENGTH_SHORT);
+                toast.show();
+                Map<String, ?> volValues = volSharedPref.getAll();
+                ArrayList<String> volAdapterData = new ArrayList<>();
+                System.out.println(volValues);
+                for (String s : volValues.keySet())
+                    volAdapterData.add(s + " volume level is " + volValues.get(s));
+                final ListView listView = (ListView) getActivity().findViewById(R.id.settings_list_view);
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(),
+                        android.R.layout.simple_list_item_1, volAdapterData);
+                listView.setAdapter(arrayAdapter);
+            }
+        });
+
+        Button clearButton = (Button) getActivity().findViewById(R.id.settings_clear_button);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                volEditor.clear();
+                volEditor.apply();
+                Map<String, ?> volValues = volSharedPref.getAll();
+                ArrayList<String> volAdapterData = new ArrayList<>();
+                System.out.println(volValues);
+                for (String s : volValues.keySet())
+                    volAdapterData.add(s + " volume level is " + volValues.get(s));
+                final ListView listView = (ListView) getActivity().findViewById(R.id.settings_list_view);
+                final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getActivity(),
+                        android.R.layout.simple_list_item_1, volAdapterData);
+                listView.setAdapter(arrayAdapter);
+                Toast toast = Toast.makeText(getActivity(), "Preferences deleted", Toast.LENGTH_SHORT);
+                toast.show();
             }
         });
     }

@@ -37,7 +37,7 @@ public class ActivityDataSetAdapter extends ArrayAdapter{
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(Long.parseLong(item.split("=")[0]));
-        int h = calendar.get(Calendar.HOUR);
+        int h = calendar.get(Calendar.HOUR_OF_DAY);
         int m = calendar.get(Calendar.MINUTE);
         int s = calendar.get(Calendar.SECOND);
         time.setText(String.valueOf(h) + ":" + String.valueOf(m) + ":" + String.valueOf(s));
